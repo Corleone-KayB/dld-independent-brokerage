@@ -1,0 +1,59 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# env / secrets — never commit real env files, only the template
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*secret*
+*credentials*
+
+# local data / uploads (compliance documents, dev storage)
+/.data
+
+# misc / OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# testing
+/coverage
+/playwright-report
+/blob-report
+/test-results
+/playwright/.cache
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# temporary files
+*.tmp
+.cache/
+
+# Private Claude Code project instructions
+CLAUDE.md
+.claude/
+
+# Private product specification
+DLD-Product-Specification.docx

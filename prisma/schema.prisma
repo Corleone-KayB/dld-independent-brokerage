@@ -1,0 +1,421 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMINISTRATOR
+  COMPLIANCE_MANAGER
+  SALES_MANAGER
+  PARTNER_MANAGER
+  BROKER
+  PARTNER_COMPANY
+  PROPERTY_OWNER
+  DEVELOPER
+  BUYER
+  TENANT
+  INVESTOR
+  MARKETING_MANAGER
+  FINANCE_MANAGER
+  SUPPORT_AGENT
+}
+
+enum PartnerType {
+  INDEPENDENT_BROKER
+  BROKERAGE_COMPANY
+  PROPERTY_OWNER
+  DEVELOPER
+  INVESTOR
+  CORPORATE_PARTNER
+  SERVICE_PROVIDER
+}
+
+enum PartnerStatus {
+  PENDING_VERIFICATION
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  MORE_INFORMATION_REQUIRED
+  SUSPENDED
+}
+
+enum VerificationStatus {
+  PENDING
+  PLATFORM_VERIFIED
+  OFFICIAL_SOURCE_VERIFIED
+  EXPIRED
+  REJECTED
+}
+
+enum PropertyPurpose {
+  BUY
+  RENT
+  COMMERCIAL
+  OFF_PLAN
+  LUXURY
+  INVESTMENT
+  HOLIDAY
+}
+
+enum PropertyType {
+  APARTMENT
+  VILLA
+  TOWNHOUSE
+  PENTHOUSE
+  OFFICE
+  RETAIL
+  WAREHOUSE
+  LAND
+}
+
+enum PropertyStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  VIEWING
+  NEGOTIATION
+  OFFER
+  CONTRACT
+  CLOSED
+  LOST
+}
+
+enum LeadTemperature {
+  HOT
+  WARM
+  COLD
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum ComplianceDocumentType {
+  TRADE_LICENSE
+  BROKER_CARD
+  PROFESSIONAL_CREDENTIAL
+  IDENTIFICATION
+  AGREEMENT
+  OTHER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String?
+  name         String?
+  phone        String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  roles      UserRole[]
+  partner    Partner?
+  broker     Broker?
+  activities Activity[]
+  auditLogs  AuditLog[] @relation("ActorAuditLogs")
+}
+
+model UserRole {
+  userId String
+  role   Role
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, role])
+  @@index([role])
+}
+
+model Partner {
+  id                      String             @id @default(cuid())
+  type                    PartnerType
+  status                  PartnerStatus      @default(PENDING_VERIFICATION)
+  companyName             String?
+  mobile                  String?
+  email                   String?
+  brokerNumber            String?
+  orn                     String?
+  specialization          String?
+  areas                   String[]
+  experienceYears         Int?
+  acceptedTermsAt         DateTime?
+  verificationStatus      VerificationStatus @default(PENDING)
+  officialVerificationUrl String?
+  lastVerifiedAt          DateTime?
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+
+  user                User?                @relation(fields: [userId], references: [id])
+  userId              String?              @unique
+  applications        PartnerApplication[]
+  brokers             Broker[]
+  properties          Property[]
+  clients             Client[]
+  leads               Lead[]
+  appointments        Appointment[]
+  complianceDocuments ComplianceDocument[]
+  auditLogs           AuditLog[]
+}
+
+model PartnerApplication {
+  id               String        @id @default(cuid())
+  partnerId        String?
+  type             PartnerType
+  fullName         String
+  email            String
+  mobile           String
+  company          String?
+  role             String?
+  brokerNumber     String?
+  orn              String?
+  brokerage        String?
+  specialization   String?
+  areas            String[]
+  experienceYears  Int?
+  licenseInfo      String?
+  practiceCardInfo String?
+  businessFocus    String[]
+  acceptedTerms    Boolean       @default(false)
+  status           PartnerStatus @default(PENDING_VERIFICATION)
+  reviewNotes      String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  partner   Partner?   @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+  auditLogs AuditLog[]
+
+  @@index([status])
+}
+
+model Broker {
+  id                      String             @id @default(cuid())
+  userId                  String             @unique
+  partnerId               String?
+  slug                    String             @unique
+  name                    String
+  photoUrl                String?
+  bio                     String?
+  languages               String[]
+  specializations         String[]
+  areasServed             String[]
+  experienceYears         Int?
+  brokerNumber            String?
+  orn                     String?
+  verificationStatus      VerificationStatus @default(PENDING)
+  officialVerificationUrl String?
+  lastVerifiedAt          DateTime?
+  rating                  Float?
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  partner      Partner?      @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+  properties   Property[]
+  leads        Lead[]        @relation("AssignedBroker")
+  appointments Appointment[]
+}
+
+model Property {
+  id                 String             @id @default(cuid())
+  slug               String             @unique
+  title              String
+  description        String?
+  purpose            PropertyPurpose
+  propertyType       PropertyType
+  status             PropertyStatus     @default(DRAFT)
+  price              Decimal            @db.Decimal(18, 2)
+  rentalPrice        Decimal?           @db.Decimal(18, 2)
+  sizeSqft           Float?
+  bedrooms           Int?
+  bathrooms          Int?
+  furnishing         String?
+  completionStatus   String?
+  community          String?
+  building           String?
+  city               String             @default("Dubai")
+  latitude           Float?
+  longitude          Float?
+  developerName      String?
+  completionDate     DateTime?
+  serviceCharge      Decimal?           @db.Decimal(18, 2)
+  rentalYield        Float?
+  roi                Float?
+  paymentPlan        String?
+  amenities          String[]
+  view               String?
+  parkingSpaces      Int?
+  verificationStatus VerificationStatus @default(PENDING)
+  partnerId          String?
+  brokerId           String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  partner      Partner?        @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+  broker       Broker?         @relation(fields: [brokerId], references: [id], onDelete: SetNull)
+  images       PropertyImage[]
+  leads        Lead[]
+  appointments Appointment[]
+
+  @@index([purpose, status])
+  @@index([community])
+  @@index([price])
+  @@index([bedrooms])
+}
+
+model PropertyImage {
+  id         String   @id @default(cuid())
+  propertyId String
+  url        String
+  alt        String?
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId, sortOrder])
+}
+
+model Client {
+  id                   String   @id @default(cuid())
+  partnerId            String
+  name                 String
+  phone                String?
+  email                String?
+  nationality          String?
+  intent               String?
+  budget               Decimal? @db.Decimal(18, 2)
+  preferredLocations   String[]
+  propertyRequirements String?
+  financingStatus      String?
+  leadSource           String?
+  notes                String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  partner      Partner       @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  leads        Lead[]
+  activities   Activity[]
+  appointments Appointment[]
+
+  @@index([partnerId])
+}
+
+model Lead {
+  id          String          @id @default(cuid())
+  partnerId   String
+  clientId    String?
+  propertyId  String?
+  brokerId    String?
+  source      String?
+  status      LeadStatus      @default(NEW)
+  temperature LeadTemperature @default(WARM)
+  score       Int?
+  message     String?
+  budget      Decimal?        @db.Decimal(18, 2)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  partner    Partner    @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  client     Client?    @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  property   Property?  @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  broker     Broker?    @relation("AssignedBroker", fields: [brokerId], references: [id], onDelete: SetNull)
+  activities Activity[]
+
+  @@index([partnerId, status])
+  @@index([brokerId, status])
+}
+
+model Activity {
+  id        String   @id @default(cuid())
+  partnerId String?
+  clientId  String?
+  leadId    String?
+  userId    String
+  type      String
+  note      String
+  createdAt DateTime @default(now())
+
+  client Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  user   User    @relation(fields: [userId], references: [id])
+
+  @@index([clientId, createdAt])
+  @@index([leadId, createdAt])
+}
+
+model Appointment {
+  id         String            @id @default(cuid())
+  partnerId  String
+  clientId   String?
+  brokerId   String?
+  propertyId String?
+  startsAt   DateTime
+  endsAt     DateTime?
+  status     AppointmentStatus @default(SCHEDULED)
+  notes      String?
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  partner  Partner   @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  client   Client?   @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  broker   Broker?   @relation(fields: [brokerId], references: [id], onDelete: SetNull)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  @@index([partnerId, startsAt])
+  @@index([propertyId])
+}
+
+model ComplianceDocument {
+  id                 String                 @id @default(cuid())
+  partnerId          String
+  type               ComplianceDocumentType
+  name               String
+  storageKey         String
+  mimeType           String?
+  expiresAt          DateTime?
+  verificationStatus VerificationStatus     @default(PENDING)
+  verifiedAt         DateTime?
+  verifiedById       String?
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+
+  partner Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@index([partnerId, verificationStatus])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  actorUserId   String?
+  action        String
+  entityType    String
+  entityId      String?
+  partnerId     String?
+  applicationId String?
+  metadata      Json?
+  createdAt     DateTime @default(now())
+
+  actor       User?               @relation("ActorAuditLogs", fields: [actorUserId], references: [id], onDelete: SetNull)
+  partner     Partner?            @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+  application PartnerApplication? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+  @@index([actorUserId, createdAt])
+  @@index([partnerId, createdAt])
+}

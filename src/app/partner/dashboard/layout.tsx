@@ -1,0 +1,21 @@
+import { redirect } from "next/navigation";
+import { getSessionUser } from "@/server/rbac/guard";
+import { anyRoleHasPermission, PERMISSIONS } from "@/server/rbac/permissions";
+import { DashboardNav } from "@/components/partner/dashboard-nav";
+
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const user = await getSessionUser();
+  if (!user) redirect("/partner/login?callbackUrl=/partner/dashboard");
+  if (!anyRoleHasPermission(user.roles, PERMISSIONS.LEADS_MANAGE_OWN)) {
+    redirect("/partner/login");
+  }
+
+  return (
+    <div className="container-shell grid gap-6 py-8 lg:grid-cols-[240px_1fr]">
+      <aside className="h-fit rounded-2xl border border-charcoal/10 bg-white">
+        <DashboardNav />
+      </aside>
+      <div>{children}</div>
+    </div>
+  );
+}
