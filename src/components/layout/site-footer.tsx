@@ -21,6 +21,10 @@ export function SiteFooter() {
             <li><Link className="focus-ring rounded hover:text-ivory" href="/properties">Properties</Link></li>
             <li><Link className="focus-ring rounded hover:text-ivory" href="/brokers">Brokers</Link></li>
             <li><Link className="focus-ring rounded hover:text-ivory" href="/communities">Communities</Link></li>
+            <li><Link className="focus-ring rounded hover:text-ivory" href="/developers">Developers</Link></li>
+            <li><Link className="focus-ring rounded hover:text-ivory" href="/investors">Investor Hub</Link></li>
+            <li><Link className="focus-ring rounded hover:text-ivory" href="/calculators">Calculators</Link></li>
+            <li><Link className="focus-ring rounded hover:text-ivory" href="/blog">Blog</Link></li>
             <li><Link className="focus-ring rounded hover:text-ivory" href="/partners">Become a Partner</Link></li>
           </ul>
         </div>

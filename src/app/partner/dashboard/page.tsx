@@ -4,6 +4,7 @@ import { prisma } from "@/server/db/client";
 import { listLeads } from "@/modules/leads/service";
 import { Card } from "@/components/ui/card";
 import { LEAD_STATUS_LABELS, LEAD_STATUS_ORDER } from "@/lib/constants";
+import { formatAed } from "@/lib/utils/format";
 
 export const metadata: Metadata = { title: "Partner Dashboard" };
 
@@ -12,15 +13,35 @@ export default async function DashboardOverviewPage() {
   const partnerId = user?.partnerId ?? undefined;
   const brokerId = user?.brokerId ?? undefined;
 
-  const [leadCount, clientCount, propertyCount, appointmentCount, leads] = await Promise.all([
+  const [
+    leadCount,
+    clientCount,
+    propertyCount,
+    appointmentCount,
+    offerCount,
+    closedDealCount,
+    commissionAgg,
+    totalLeadCount,
+    closedLeadCount,
+    leads,
+  ] = await Promise.all([
     partnerId ? prisma.lead.count({ where: { partnerId, status: { notIn: ["CLOSED", "LOST"] } } }) : 0,
     partnerId ? prisma.client.count({ where: { partnerId } }) : 0,
     partnerId ? prisma.property.count({ where: { partnerId, status: "PUBLISHED" } }) : 0,
     partnerId
       ? prisma.appointment.count({ where: { partnerId, startsAt: { gte: new Date() }, status: { in: ["SCHEDULED", "CONFIRMED"] } } })
       : 0,
+    partnerId ? prisma.deal.count({ where: { partnerId, stage: "OFFER" } }) : 0,
+    partnerId ? prisma.deal.count({ where: { partnerId, stage: "CLOSED" } }) : 0,
+    partnerId
+      ? prisma.commission.aggregate({ where: { partnerId, status: { in: ["EXPECTED", "APPROVED", "PAID"] } }, _sum: { amount: true } })
+      : null,
+    partnerId ? prisma.lead.count({ where: { partnerId } }) : 0,
+    partnerId ? prisma.lead.count({ where: { partnerId, status: "CLOSED" } }) : 0,
     listLeads({ partnerId, brokerId }),
   ]);
+
+  const conversionRate = totalLeadCount > 0 ? Math.round((closedLeadCount / totalLeadCount) * 100) : 0;
 
   const pipeline = LEAD_STATUS_ORDER.map((status) => ({
     status,
@@ -39,14 +60,18 @@ export default async function DashboardOverviewPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: "Active Leads", value: leadCount },
+          { label: "New Leads", value: leadCount },
           { label: "Active Clients", value: clientCount },
           { label: "Active Listings", value: propertyCount },
-          { label: "Upcoming Viewings", value: appointmentCount },
+          { label: "Viewings", value: appointmentCount },
+          { label: "Offers", value: offerCount },
+          { label: "Closed Deals", value: closedDealCount },
+          { label: "Commission", value: formatAed(commissionAgg?._sum.amount ?? 0) },
+          { label: "Conversion Rate", value: `${conversionRate}%` },
         ].map((kpi) => (
           <Card key={kpi.label} className="p-5">
             <p className="text-xs uppercase tracking-wide text-charcoal/50">{kpi.label}</p>
-            <p className="mt-2 font-display text-3xl font-semibold text-charcoal">{kpi.value}</p>
+            <p className="mt-2 font-display text-2xl font-semibold text-charcoal">{kpi.value}</p>
           </Card>
         ))}
       </div>

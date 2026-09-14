@@ -6,16 +6,24 @@ Department (DLD) platform** — it is an independent private network that
 complements official DLD services and links out to them for official
 verification.
 
-Built as a Phase 1 MVP: public marketplace, broker directory, partner
-onboarding, embedded CRM, compliance center, admin console, deterministic
-property matching, and audit logging.
+**Phase 1 (MVP) + Phase 2 complete.** Phase 1: public marketplace, broker
+directory, partner onboarding, embedded CRM, compliance center, admin
+console, deterministic property matching, audit logging. Phase 2 adds: a
+Developer Portal, a Property Owner Portal, Deal & Commission Management, a
+cross-partner Lead Marketplace with automatic lead scoring/distribution, a
+deterministic AI Property Advisor and Broker Assistant, Investor Tools (8
+ROI/mortgage/affordability calculators), Advanced Analytics with Broker
+Performance Ranking, and a scoped Automated Marketing module (blog +
+banners + SEO metadata).
 
 ## Stack
 
 Next.js 15 (App Router, TypeScript, strict mode) · Tailwind CSS · PostgreSQL
 · Prisma · Zod · Auth.js (NextAuth v5, credentials + JWT sessions) · Vitest ·
 Playwright · ESLint/Prettier · Docker Compose (local Postgres) · local
-filesystem storage provider (swappable for S3-compatible storage).
+filesystem storage provider (swappable for S3-compatible storage). No new
+runtime dependencies were added for Phase 2 — every calculator, scoring, and
+matching engine is plain TypeScript.
 
 ## Quick start
 
@@ -39,8 +47,8 @@ npm run start
 
 All seeded users share the password in `SEED_USER_PASSWORD`
 (`.env.example` default: `DldPartners#2026`). Sign in at `/partner/login` —
-admin-type roles are redirected to `/admin`, broker/partner roles to
-`/partner/dashboard`.
+admin-type roles are redirected to `/admin`, broker/partner/developer roles
+to `/partner/dashboard`.
 
 | Email | Role |
 |---|---|
@@ -48,11 +56,12 @@ admin-type roles are redirected to `/admin`, broker/partner roles to
 | compliance@dldpartners.local | Compliance Manager |
 | sales@dldpartners.local | Sales Manager |
 | partner.manager@dldpartners.local | Partner Manager |
-| broker@dldpartners.local | Broker (Ahmed Al Mansoori — has seeded listings, clients, leads) |
+| broker@dldpartners.local | Broker (Ahmed Al Mansoori — has seeded listings, clients, leads, a deal + commission) |
 | company@dldpartners.local | Partner Company (Emirates Prime Brokerage) |
+| developer@dldpartners.local | Developer (Meraas Demo Developer — has a published project + 3 units) |
 
 All demo data is clearly synthetic (`.local` / `.example` emails, "Demo
-listing" descriptions) — see `DEMO_DATA_DISCLAIMER` in
+listing"/"(Demo)" descriptions) — see `DEMO_DATA_DISCLAIMER` in
 `src/lib/constants/index.ts` and the on-page disclaimer under the homepage
 hero.
 
@@ -85,34 +94,44 @@ npm run db:seed            # re-run the seed (idempotent upserts)
 ```bash
 npm run lint
 npm run typecheck
-npm run test        # Vitest: unit + integration (integration tests need the
-                     # local Postgres from docker compose + seed data)
-npm run test:e2e     # Playwright — run `npx playwright install` once first,
-                     # and have `npm run dev` reachable at localhost:3000
+npm run test        # Vitest: 77 unit + integration tests (integration tests
+                     # need the local Postgres from docker compose + seed data)
+npm run test:e2e     # Playwright — 9 specs. Run `npx playwright install` once
+                     # first, and have `npm run dev` reachable at localhost:3000
 ```
 
-Unit tests cover the deterministic matching engine, the RBAC permission
-matrix (deny-by-default), DLD verification-label compliance guardrails
-(never claims official DLD verification without an authorized source), the
-WhatsApp link builder, and compliance document expiry logic. Integration
-tests exercise property search against the real seeded database. E2E specs
-cover the public homepage/property/broker/partner-apply journeys.
+Unit tests cover: the deterministic property-matching, broker-matching,
+lead-scoring, and broker-performance engines; all 8 investor calculators
+(including a round-trip consistency check between the affordability and
+mortgage formulas); the AI Property Advisor and Broker Assistant query
+parser; the RBAC permission matrix (deny-by-default); DLD verification-label
+compliance guardrails; the WhatsApp link builder; and compliance document
+expiry logic. Integration tests exercise the full Phase 2 feature set against
+the real seeded database: developer/project publishing, owner-listing
+submission + auto-match, deal→commission creation, lead distribution +
+marketplace accept, analytics aggregation, and marketing content visibility.
+E2E specs cover the public homepage/property/broker/partner-apply journeys
+plus the new developer/investor/calculators/blog/list-property pages.
 
 ## Architecture
 
 Modular monolith with domain boundaries under `src/modules/*`
-(properties, brokers, partners, crm, leads, compliance, admin) and
-cross-cutting services under `src/server/*` (auth, rbac, audit, storage,
-notifications, dld, matching). See `docs/ARCHITECTURE.md`, `docs/API.md`,
+(properties, brokers, partners, crm, leads, compliance, admin, developers,
+deals, commissions, analytics, marketing) and cross-cutting services under
+`src/server/*` (auth, rbac, audit, storage, notifications, dld, matching,
+advisor, assistant, analytics). See `docs/ARCHITECTURE.md`, `docs/API.md`,
 `docs/RBAC.md`, and `docs/DLD-COMPLIANCE.md` for the design contracts this
-build follows, and `.claude/PROJECT_STATE.md` for build history and status.
+build follows, and `.claude/PROJECT_STATE.md` for the full build history
+(both phases) and status.
 
 ### Security notes
 
 - Every mutating API route re-derives the caller's roles from the signed
   session (never trusts client-sent role data), enforces permissions via
   `src/server/rbac`, and scopes partner-owned resources to their own
-  partner ID unless a broader permission is granted.
+  partner ID unless a broader permission is granted. Endpoints needing both
+  an own-scope and a manage-all permission use `requireAnyPermission()` so
+  admin roles aren't wrongly denied (see `src/server/rbac/guard.ts`).
 - Privileged actions write an `AuditLog` row (`src/server/audit/log.ts`).
 - Compliance documents are stored outside `public/` and served only via a
   signed, time-limited, session-authenticated route
@@ -120,10 +139,15 @@ build follows, and `.claude/PROJECT_STATE.md` for build history and status.
 - Verification labels are strictly guarded: `PLATFORM_VERIFIED` /
   `Verification Pending` for internal review, and `Verified against
   official DLD source` only when data is genuinely sourced from an
-  authorized DLD integration (none exists in this MVP — the manual
+  authorized DLD integration (none exists in this build — the manual
   verification endpoint cannot set that status).
+- **"AI" features are honestly labeled.** AI Lead Scoring, the AI Property
+  Advisor, and the AI Broker Assistant are all deterministic, transparent
+  rule/formula engines — no external LLM is called (none is configured),
+  and the UI says so rather than implying a chatbot. Same precedent as the
+  MVP's deterministic property-matching engine.
 
-## Known limitations (MVP scope)
+## Known limitations
 
 - No authorized DLD API integration exists yet (Tier 2 in
   `docs/DLD-COMPLIANCE.md`) — verification is Tier 3/4 (partner-submitted +
@@ -136,23 +160,29 @@ build follows, and `.claude/PROJECT_STATE.md` for build history and status.
 - Playwright e2e tests must run with a single worker
   (`playwright.config.ts` sets `workers: 1`) — this sandboxed dev VM can't
   sustain multiple parallel Chromium instances (they crash under
-  contention). 4/4 e2e specs pass serially. Also note: seed data uses
-  external Unsplash image URLs, and this sandbox has no outbound network
-  access from the browser, so the specs abort `images.unsplash.com`
-  requests via `page.route()` — real/production environments with internet
-  access don't need this, but leaving it in is harmless.
+  contention). Also note: seed data uses external Unsplash image URLs, and
+  this sandbox has no outbound network access from the browser, so the
+  specs abort `images.unsplash.com` requests via `page.route()` —
+  real/production environments with internet access don't need this, but
+  leaving it in is harmless.
 - Object storage uses the local filesystem provider; swap
   `src/server/storage` for an S3-compatible provider for production.
 - Public partner application → admin approval provisions a real login
   account with a generated temporary password logged via the notification
   provider — production would need a proper invite/reset-password email
   flow instead of logging the password.
+- Geographic analytics ("Hot Areas") is a community-performance table, not a
+  literal interactive Dubai map — no mapping stack exists in this project;
+  adding one was out of scope for this pass.
+- Automated Marketing is scoped to Blog + Banners + SEO metadata — not a
+  full drag-and-drop CMS page builder (that's the broader long-term vision
+  in the spec, not what Phase 2's explicit feature list names).
 
-## Phase 2 backlog (explicitly out of MVP scope)
+## Phase 3 backlog (explicitly out of scope — the "DLD Independent Brokerage Network")
 
-Developer portal, property owner portal, advanced/AI-assisted CRM, lead
-marketplace, AI property/lead-scoring assistant, commission management,
-advanced analytics & broker performance ranking, automated marketing/CMS.
-Extension points are already isolated (matching engine, DLD adapter,
-storage/notification interfaces) so these can be added without rearchitecting
-Phase 1.
+Broker-to-broker collaboration: sharing listings between brokers, peer lead
+exchange, secure messaging, broker reputation/trust scores, and
+commission-splitting between brokers. Extension points from both phases
+(matching/advisor/assistant engines, DLD adapter, storage/notification
+interfaces) are already isolated so this can be added without
+rearchitecting Phases 1–2.

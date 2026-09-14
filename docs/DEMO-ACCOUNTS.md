@@ -8,5 +8,6 @@ Seed these only for development/test environments.
 - Partner Manager: partner.manager@dldpartners.local
 - Broker: broker@dldpartners.local
 - Partner Company: company@dldpartners.local
+- Developer (Phase 2): developer@dldpartners.local
 
 Use one documented development password from an environment variable such as `SEED_USER_PASSWORD`. Never publish real credentials.

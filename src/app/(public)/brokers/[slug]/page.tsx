@@ -72,7 +72,7 @@ export default async function BrokerProfilePage({ params }: { params: Promise<{ 
           )}
 
           <div className="mt-6 flex flex-col gap-2">
-            <WhatsAppButton message={whatsappMessage}>WhatsApp Broker</WhatsAppButton>
+            <WhatsAppButton message={whatsappMessage} trackType="WHATSAPP_BROKER" brokerId={broker.id}>WhatsApp Broker</WhatsAppButton>
             {dldConfig.officialVerificationUrl && (
               <a
                 href={dldConfig.officialVerificationUrl}

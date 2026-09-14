@@ -73,7 +73,33 @@ export const propertyCreateSchema = z.object({
 
 export const propertyUpdateSchema = propertyCreateSchema.partial().extend({
   status: z.enum(["DRAFT", "PENDING_REVIEW", "PUBLISHED", "ARCHIVED"]).optional(),
+  brokerId: z.string().trim().nullable().optional(),
 });
 
 export type PropertyCreateInput = z.infer<typeof propertyCreateSchema>;
 export type PropertyUpdateInput = z.infer<typeof propertyUpdateSchema>;
+
+/** Public "List My Property" submission (Property Owner Portal, Phase 2). */
+export const ownerListingSchema = z
+  .object({
+    ownerName: z.string().trim().min(2, "Full name is required").max(200),
+    ownerEmail: z.string().trim().email("A valid email is required"),
+    ownerPhone: z.string().trim().min(6, "A valid mobile number is required").max(30),
+    purpose: z.enum(["BUY", "RENT"]),
+    propertyType: propertyTypeEnum,
+    price: z.coerce.number().positive().optional(),
+    rentalPrice: z.coerce.number().positive().optional(),
+    bedrooms: z.coerce.number().int().nonnegative().optional(),
+    sizeSqft: z.coerce.number().positive().optional(),
+    community: z.string().trim().optional(),
+    city: z.string().trim().default("Dubai"),
+    images: z.array(z.string().url()).default([]),
+    preferredBrokerId: z.string().trim().optional(),
+    matchRequested: z.boolean().default(false),
+  })
+  .refine((data) => (data.purpose === "BUY" ? data.price !== undefined : data.rentalPrice !== undefined), {
+    message: "Asking price is required to sell, rental price is required to rent",
+    path: ["price"],
+  });
+
+export type OwnerListingInput = z.infer<typeof ownerListingSchema>;

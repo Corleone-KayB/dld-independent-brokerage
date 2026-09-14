@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldCheck, Building2, Users2, FileCheck2 } from "lucide-react";
 import { Hero } from "@/components/public/hero";
+import { PromoBanners } from "@/components/public/promo-banners";
 import { PropertyCard } from "@/components/property/property-card";
 import { BrokerCard } from "@/components/broker/broker-card";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,8 @@ export default async function HomePage() {
       <section className="border-b border-charcoal/10 bg-white py-6">
         <p className="container-shell text-center text-xs text-charcoal/50">{DEMO_DATA_DISCLAIMER}</p>
       </section>
+
+      <PromoBanners />
 
       <section className="container-shell py-16">
         <div className="mb-8 flex items-end justify-between">

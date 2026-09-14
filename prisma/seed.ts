@@ -49,7 +49,7 @@ async function main() {
   console.log("Seeding demo data (this data is for development/evaluation only)...");
 
   // --- Admin / staff demo accounts ---
-  await upsertUserWithRoles({ email: "admin@dldpartners.local", name: "Super Admin", roles: ["SUPER_ADMIN"] });
+  const adminUser = await upsertUserWithRoles({ email: "admin@dldpartners.local", name: "Super Admin", roles: ["SUPER_ADMIN"] });
   await upsertUserWithRoles({ email: "compliance@dldpartners.local", name: "Compliance Manager", roles: ["COMPLIANCE_MANAGER"] });
   await upsertUserWithRoles({ email: "sales@dldpartners.local", name: "Sales Manager", roles: ["SALES_MANAGER"] });
   await upsertUserWithRoles({ email: "partner.manager@dldpartners.local", name: "Partner Manager", roles: ["PARTNER_MANAGER"] });
@@ -153,6 +153,71 @@ async function main() {
       rating: 4.6,
     },
   });
+
+  // --- Demo developer + off-plan project (Phase 2) ---
+  const developerUser = await upsertUserWithRoles({
+    email: "developer@dldpartners.local",
+    name: "Nadia Al Farsi",
+    phone: "+971503334455",
+    roles: ["DEVELOPER"],
+  });
+
+  const developerPartner = await prisma.partner.upsert({
+    where: { userId: developerUser.id },
+    update: {},
+    create: {
+      type: "DEVELOPER",
+      status: "APPROVED",
+      companyName: "Meraas Demo Developer",
+      mobile: "+971503334455",
+      email: developerUser.email,
+      acceptedTermsAt: new Date(),
+      verificationStatus: "PLATFORM_VERIFIED",
+      lastVerifiedAt: new Date(),
+      userId: developerUser.id,
+    },
+  });
+
+  const developer = await prisma.developer.upsert({
+    where: { partnerId: developerPartner.id },
+    update: {},
+    create: {
+      partnerId: developerPartner.id,
+      slug: "meraas-demo-developer",
+      name: "Meraas Demo Developer",
+      description: "A demonstration developer profile showcasing an off-plan project pipeline. Demo data for development purposes.",
+      verificationStatus: "PLATFORM_VERIFIED",
+      lastVerifiedAt: new Date(),
+    },
+  });
+
+  const demoProject = await prisma.project.upsert({
+    where: { slug: "jvc-skyline-residences" },
+    update: {},
+    create: {
+      developerId: developer.id,
+      slug: "jvc-skyline-residences",
+      name: "JVC Skyline Residences",
+      description: "A demo off-plan residential project in JVC with a 60/40 payment plan and an expected 2028 handover.",
+      status: "PUBLISHED",
+      community: "JVC",
+      city: "Dubai",
+      completionDate: new Date("2028-06-01"),
+      amenities: ["Pool", "Gym", "Kids Play Area", "Retail Podium"],
+      images: { create: [{ url: UNSPLASH.marina, sortOrder: 0 }] },
+    },
+  });
+
+  const existingUnits = await prisma.projectUnit.count({ where: { projectId: demoProject.id } });
+  if (existingUnits === 0) {
+    await prisma.projectUnit.createMany({
+      data: [
+        { projectId: demoProject.id, unitNumber: "A-101", propertyType: "APARTMENT", bedrooms: 1, bathrooms: 1, sizeSqft: 700, price: 920000, paymentPlan: "60/40" },
+        { projectId: demoProject.id, unitNumber: "A-205", propertyType: "APARTMENT", bedrooms: 2, bathrooms: 2, sizeSqft: 1050, price: 1350000, paymentPlan: "60/40" },
+        { projectId: demoProject.id, unitNumber: "A-310", propertyType: "APARTMENT", bedrooms: 3, bathrooms: 3, sizeSqft: 1500, price: 1890000, paymentPlan: "60/40" },
+      ],
+    });
+  }
 
   // --- Demo properties ---
   const propertiesData = [
@@ -410,6 +475,68 @@ async function main() {
       mimeType: "text/plain",
       expiresAt: new Date(Date.now() + 200 * 24 * 60 * 60 * 1000),
       verificationStatus: "PENDING",
+    },
+  });
+
+  // --- Demo deal + commission (Phase 2) ---
+  const downtownPenthouse = await prisma.property.findUnique({ where: { slug: "downtown-luxury-penthouse" } });
+  const demoDeal = await prisma.deal.upsert({
+    where: { id: "seed-deal-demo" },
+    update: {},
+    create: {
+      id: "seed-deal-demo",
+      partnerId: brokerPartner.id,
+      clientId: demoClient.id,
+      propertyId: downtownPenthouse?.id,
+      brokerId: broker1.id,
+      stage: "COMMISSION",
+      value: downtownPenthouse?.price,
+      notes: "Demo deal progressed to the commission stage.",
+    },
+  });
+
+  await prisma.commission.upsert({
+    where: { id: "seed-commission-demo" },
+    update: {},
+    create: {
+      id: "seed-commission-demo",
+      dealId: demoDeal.id,
+      partnerId: brokerPartner.id,
+      brokerId: broker1.id,
+      amount: downtownPenthouse ? Number(downtownPenthouse.price) * 0.02 : 178000,
+      status: "EXPECTED",
+    },
+  });
+
+  // --- Demo blog post + banner (Phase 2 automated marketing) ---
+  await prisma.blogPost.upsert({
+    where: { slug: "dubai-marina-investment-guide" },
+    update: {},
+    create: {
+      slug: "dubai-marina-investment-guide",
+      title: "Dubai Marina Investment Guide 2026 (Demo)",
+      excerpt: "A demo guide covering yields, community overview and buyer considerations in Dubai Marina.",
+      content:
+        "This is demo blog content for development and evaluation purposes.\n\nDubai Marina remains one of Dubai's most established rental markets, with strong demand from both tenants and investors.\n\nUse the Investor Hub calculators to model your own returns before making a decision.",
+      coverImageUrl: UNSPLASH.marina,
+      status: "PUBLISHED",
+      publishedAt: new Date(),
+      authorId: adminUser.id,
+    },
+  });
+
+  await prisma.banner.upsert({
+    where: { id: "seed-banner-demo" },
+    update: {},
+    create: {
+      id: "seed-banner-demo",
+      title: "New: Off-Plan Projects Now Live",
+      subtitle: "Browse verified developer projects with transparent payment plans.",
+      ctaLabel: "View Developers",
+      ctaHref: "/developers",
+      placement: "HOMEPAGE",
+      isActive: true,
+      sortOrder: 0,
     },
   });
 

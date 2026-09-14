@@ -1,10 +1,11 @@
 import "server-only";
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
-import type { Prisma, PartnerStatus } from "@prisma/client";
+import type { Prisma, PartnerStatus, PartnerType } from "@prisma/client";
 import { prisma } from "@/server/db/client";
 import { slugify } from "@/lib/utils/format";
 import { notifications } from "@/server/notifications";
+import type { AppRole } from "@/server/rbac/permissions";
 import type { PartnerApplicationInput } from "@/lib/validations/partner";
 
 export async function submitPartnerApplication(input: PartnerApplicationInput) {
@@ -75,6 +76,36 @@ async function uniqueBrokerSlug(name: string) {
   return candidate;
 }
 
+async function uniqueDeveloperSlug(name: string) {
+  const base = slugify(name);
+  let candidate = base || "developer";
+  let counter = 1;
+  while (await prisma.developer.findUnique({ where: { slug: candidate } })) {
+    candidate = `${base}-${counter}`;
+    counter += 1;
+  }
+  return candidate;
+}
+
+/** Maps a partner application type to the login role it should be granted. */
+function roleForPartnerType(type: PartnerType): AppRole {
+  switch (type) {
+    case "INDEPENDENT_BROKER":
+      return "BROKER";
+    case "PROPERTY_OWNER":
+      return "PROPERTY_OWNER";
+    case "DEVELOPER":
+      return "DEVELOPER";
+    case "INVESTOR":
+      return "INVESTOR";
+    case "BROKERAGE_COMPANY":
+    case "CORPORATE_PARTNER":
+    case "SERVICE_PROVIDER":
+    default:
+      return "PARTNER_COMPANY";
+  }
+}
+
 function generateTemporaryPassword() {
   return crypto.randomBytes(9).toString("base64url");
 }
@@ -102,10 +133,11 @@ async function provisionPartnerAccount(applicationId: string) {
       }));
 
     const isBrokerType = application.type === "INDEPENDENT_BROKER" || application.type === "BROKERAGE_COMPANY";
+    const role = roleForPartnerType(application.type);
 
     await tx.userRole.upsert({
-      where: { userId_role: { userId: user.id, role: isBrokerType ? "BROKER" : "PARTNER_COMPANY" } },
-      create: { userId: user.id, role: isBrokerType ? "BROKER" : "PARTNER_COMPANY" },
+      where: { userId_role: { userId: user.id, role } },
+      create: { userId: user.id, role },
       update: {},
     });
 
@@ -142,6 +174,21 @@ async function provisionPartnerAccount(applicationId: string) {
             experienceYears: application.experienceYears,
             brokerNumber: application.brokerNumber,
             orn: application.orn,
+            verificationStatus: "PLATFORM_VERIFIED",
+            lastVerifiedAt: new Date(),
+          },
+        });
+      }
+    }
+
+    if (application.type === "DEVELOPER") {
+      const existingDeveloper = await tx.developer.findUnique({ where: { partnerId: partner.id } });
+      if (!existingDeveloper) {
+        await tx.developer.create({
+          data: {
+            partnerId: partner.id,
+            slug: await uniqueDeveloperSlug(application.company ?? application.fullName),
+            name: application.company ?? application.fullName,
             verificationStatus: "PLATFORM_VERIFIED",
             lastVerifiedAt: new Date(),
           },

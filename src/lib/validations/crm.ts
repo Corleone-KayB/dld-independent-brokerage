@@ -24,7 +24,6 @@ export const leadCreateSchema = z.object({
   propertyId: z.string().trim().optional(),
   brokerId: z.string().trim().optional(),
   source: z.string().trim().max(100).optional(),
-  temperature: z.enum(["HOT", "WARM", "COLD"]).default("WARM"),
   message: z.string().trim().max(2000).optional(),
   budget: z.coerce.number().nonnegative().optional(),
 });
@@ -46,6 +45,7 @@ export const leadUpdateSchema = z.object({
   temperature: z.enum(["HOT", "WARM", "COLD"]).optional(),
   message: z.string().trim().max(2000).optional(),
   budget: z.coerce.number().nonnegative().optional(),
+  visibility: z.enum(["PRIVATE", "MARKETPLACE"]).optional(),
 });
 
 export const leadAssignSchema = z.object({

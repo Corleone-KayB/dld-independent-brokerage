@@ -2,6 +2,8 @@ export const MAIN_NAV = [
   { label: "Properties", href: "/properties" },
   { label: "Brokers", href: "/brokers" },
   { label: "Communities", href: "/communities" },
+  { label: "Developers", href: "/developers" },
+  { label: "Investors", href: "/investors" },
   { label: "Partners", href: "/partners" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
@@ -75,6 +77,42 @@ export const COMMUNITIES = [
   "Jumeirah",
   "Al Barsha",
 ] as const;
+
+/** Default commission rate applied when a deal reaches the Commission stage, per the spec's worked example (~2%). Editable per-deal afterwards. */
+export const COMMISSION_DEFAULT_RATE = 0.02;
+
+export const DEAL_STAGE_LABELS: Record<string, string> = {
+  VIEWING: "Viewing",
+  OFFER: "Offer",
+  NEGOTIATION: "Negotiation",
+  MOU: "MOU",
+  CONTRACT: "Contract",
+  PAYMENT: "Payment",
+  TRANSFER: "Transfer",
+  COMMISSION: "Commission",
+  CLOSED: "Closed",
+  CANCELLED: "Cancelled",
+};
+
+export const DEAL_STAGE_ORDER = [
+  "VIEWING",
+  "OFFER",
+  "NEGOTIATION",
+  "MOU",
+  "CONTRACT",
+  "PAYMENT",
+  "TRANSFER",
+  "COMMISSION",
+  "CLOSED",
+];
+
+export const COMMISSION_STATUS_LABELS: Record<string, string> = {
+  PENDING: "Pending",
+  EXPECTED: "Expected",
+  APPROVED: "Approved",
+  PAID: "Paid",
+  DISPUTED: "Disputed",
+};
 
 export const DEMO_DATA_DISCLAIMER =
   "Demo data for development and evaluation purposes. Not a live or official DLD data feed.";

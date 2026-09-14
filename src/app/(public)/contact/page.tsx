@@ -17,7 +17,7 @@ export default function ContactPage() {
         <p className="font-medium text-charcoal">WhatsApp Support</p>
         <p className="mt-1 text-sm text-charcoal/60">Fastest way to reach our team.</p>
         <div className="mt-4">
-          <WhatsAppButton message="Hi, I have a question about DLD Independent Brokerage Partners.">
+          <WhatsAppButton message="Hi, I have a question about DLD Independent Brokerage Partners." trackType="WHATSAPP_SUPPORT">
             WhatsApp Support
           </WhatsAppButton>
         </div>

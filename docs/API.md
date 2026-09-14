@@ -95,6 +95,50 @@ POST /api/compliance/documents
 PATCH /api/compliance/documents/:id
 POST /api/compliance/documents/:id/verify
 
+## Developer Portal (Phase 2)
+GET /api/developers
+GET /api/developers/:id
+POST /api/developers/:id/projects
+GET /api/developers/:id/projects
+GET /api/projects/:id
+PATCH /api/projects/:id
+POST /api/projects/:id/units
+PATCH /api/project-units/:id
+
+## Property Owner Portal (Phase 2)
+POST /api/properties/owner-submissions (public — "List My Property")
+
+## Deal Management + Commission Management (Phase 2)
+GET /api/deals
+POST /api/deals
+GET /api/deals/:id
+PATCH /api/deals/:id/stage
+GET /api/commissions
+PATCH /api/commissions/:id/status
+
+## Lead Marketplace (Phase 2)
+GET /api/leads/marketplace
+POST /api/leads/:id/accept
+
+## AI Property Advisor + AI Broker Assistant (Phase 2, deterministic — see docs/DLD-COMPLIANCE.md-style honesty note in ARCHITECTURE.md)
+POST /api/advisor/properties (public)
+POST /api/assistant/query (broker, scoped to own CRM)
+
+## Advanced Analytics (Phase 2)
+GET /api/analytics/overview
+POST /api/analytics/track (public, fire-and-forget enquiry/view logging)
+
+## Automated Marketing (Phase 2)
+GET /api/blog
+POST /api/blog
+GET /api/blog/:id
+PATCH /api/blog/:id
+DELETE /api/blog/:id
+GET /api/banners
+POST /api/banners
+PATCH /api/banners/:id
+DELETE /api/banners/:id
+
 ## Security
 Every mutation:
 - validates body

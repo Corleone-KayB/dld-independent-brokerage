@@ -42,3 +42,17 @@ BROKER and PARTNER_COMPANY users can only access resources belonging to their pa
 
 ## Deny by default
 New roles and permissions must be explicitly granted. Unknown permissions are denied.
+
+## Phase 2 permissions
+
+| Permission | Super Admin | Admin | Sales Mgr | Partner Mgr | Broker | Partner Co | Developer | Finance Mgr | Marketing Mgr |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| manage own developer projects | ✓ |  |  |  |  |  | ✓ |  |  |
+| manage own deals | ✓ |  |  |  | ✓ | ✓ |  |  |  |
+| manage all deals | ✓ | ✓ | ✓ | ✓ |  |  |  |  |  |
+| manage commissions (approve/pay/dispute) | ✓ |  |  |  |  |  |  | ✓ |  |
+| view/accept lead marketplace | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |  |  |  |
+| manage marketing content (blog/banners) | ✓ |  |  |  |  |  |  |  | ✓ |
+| view advanced analytics | ✓ | ✓ | ✓ | ✓ |  |  |  | ✓ | ✓ |
+
+Endpoints requiring both an "own-scope" permission (e.g. `deals:manage_own`) and a broader "manage-all" role use `requireAnyPermission()` so admin-level roles — which hold the manage-all permission but never the own-scope one — aren't wrongly denied. `src/server/rbac/guard.ts` documents this pattern.

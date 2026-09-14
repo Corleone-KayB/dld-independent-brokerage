@@ -52,6 +52,20 @@ export async function requirePermission(permission: Permission): Promise<Session
   return user;
 }
 
+/**
+ * Use when an endpoint should admit either an "own-scope" role or a
+ * broader "manage-all" role (e.g. a broker's own-deals permission vs a
+ * sales manager's manage-all permission) — requiring only the own-scope
+ * permission would wrongly 403 the manage-all roles that never hold it.
+ */
+export async function requireAnyPermission(permissions: Permission[]): Promise<SessionUser> {
+  const user = await requireSessionUser();
+  if (!permissions.some((permission) => anyRoleHasPermission(user.roles, permission))) {
+    throw new ForbiddenError(`Missing permission: one of [${permissions.join(", ")}]`);
+  }
+  return user;
+}
+
 /** True if the user owns the partner-scoped resource, or holds a broader manage-all permission. */
 export function ownsPartnerResource(
   user: SessionUser,

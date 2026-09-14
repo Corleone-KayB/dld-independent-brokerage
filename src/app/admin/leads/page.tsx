@@ -3,6 +3,7 @@ import { prisma } from "@/server/db/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LeadAssignSelect } from "@/components/admin/lead-assign-select";
+import { LeadMarketplaceToggle } from "@/components/admin/lead-marketplace-toggle";
 import { LEAD_STATUS_LABELS } from "@/lib/constants";
 import { formatDate } from "@/lib/utils/format";
 
@@ -33,19 +34,29 @@ export default async function AdminLeadsPage() {
             <thead className="border-b border-charcoal/10 text-xs uppercase tracking-wide text-charcoal/50">
               <tr>
                 <th className="px-4 py-3">Client</th>
+                <th className="px-4 py-3">Score</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Created</th>
                 <th className="px-4 py-3">Assigned Broker</th>
+                <th className="px-4 py-3">Marketplace</th>
               </tr>
             </thead>
             <tbody>
               {leads.map((lead) => (
                 <tr key={lead.id} className="border-b border-charcoal/5 last:border-0">
                   <td className="px-4 py-3">{lead.client?.name ?? "—"}</td>
+                  <td className="px-4 py-3">
+                    <Badge tone={lead.temperature === "HOT" ? "danger" : lead.temperature === "WARM" ? "warning" : "neutral"}>
+                      {lead.score ?? 0}/100 · {lead.temperature}
+                    </Badge>
+                  </td>
                   <td className="px-4 py-3"><Badge tone="neutral">{LEAD_STATUS_LABELS[lead.status]}</Badge></td>
                   <td className="px-4 py-3 text-charcoal/50">{formatDate(lead.createdAt)}</td>
                   <td className="px-4 py-3">
                     <LeadAssignSelect leadId={lead.id} brokerId={lead.brokerId} brokers={brokers} />
+                  </td>
+                  <td className="px-4 py-3">
+                    <LeadMarketplaceToggle leadId={lead.id} visibility={lead.visibility} />
                   </td>
                 </tr>
               ))}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getAdminDashboardStats } from "@/modules/admin/service";
 import { Card } from "@/components/ui/card";
+import { formatAed } from "@/lib/utils/format";
 
 export const metadata: Metadata = { title: "Admin Dashboard" };
 
@@ -12,6 +13,11 @@ export default async function AdminDashboardPage() {
     { label: "Verified Brokers", value: stats.verifiedBrokers },
     { label: "Active Properties", value: stats.activeProperties },
     { label: "Active Leads", value: stats.activeLeads },
+    { label: "Active Deals", value: stats.activeDeals },
+    { label: "Closed Deals", value: stats.closedDeals },
+    { label: "Revenue (Closed Deals)", value: formatAed(stats.revenue) },
+    { label: "Commission", value: formatAed(stats.commission) },
+    { label: "Conversion Rate", value: `${stats.conversionRate}%` },
     { label: "Pending Applications", value: stats.pendingApplications },
     { label: "Compliance Issues", value: stats.complianceIssues },
   ];
@@ -27,7 +33,7 @@ export default async function AdminDashboardPage() {
         {cards.map((card) => (
           <Card key={card.label} className="p-5">
             <p className="text-xs uppercase tracking-wide text-charcoal/50">{card.label}</p>
-            <p className="mt-2 font-display text-3xl font-semibold text-charcoal">{card.value}</p>
+            <p className="mt-2 font-display text-2xl font-semibold text-charcoal">{card.value}</p>
           </Card>
         ))}
       </div>

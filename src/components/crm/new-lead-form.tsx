@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Label, Select, Textarea, FormError } from "@/components/ui/input";
+import { Input, Label, Select, Textarea, FormError } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -10,7 +10,7 @@ export function NewLeadForm({ clients }: { clients: { id: string; name: string }
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [clientId, setClientId] = useState("");
-  const [temperature, setTemperature] = useState("WARM");
+  const [budget, setBudget] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -22,7 +22,7 @@ export function NewLeadForm({ clients }: { clients: { id: string; name: string }
     const res = await fetch("/api/leads", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ clientId: clientId || undefined, temperature, message }),
+      body: JSON.stringify({ clientId: clientId || undefined, budget: budget || undefined, message }),
     });
     const json = await res.json();
     setSubmitting(false);
@@ -56,17 +56,17 @@ export function NewLeadForm({ clients }: { clients: { id: string; name: string }
           </Select>
         </div>
         <div>
-          <Label htmlFor="temperature">Temperature</Label>
-          <Select id="temperature" value={temperature} onChange={(e) => setTemperature(e.target.value)}>
-            <option value="HOT">Hot</option>
-            <option value="WARM">Warm</option>
-            <option value="COLD">Cold</option>
-          </Select>
+          <Label htmlFor="budget">Budget (AED)</Label>
+          <Input id="budget" type="number" min={0} value={budget} onChange={(e) => setBudget(e.target.value)} />
         </div>
         <div className="sm:col-span-2">
           <Label htmlFor="message">Message</Label>
           <Textarea id="message" value={message} onChange={(e) => setMessage(e.target.value)} />
         </div>
+        <p className="text-xs text-charcoal/50 sm:col-span-2">
+          Lead score and temperature are calculated automatically, and the
+          lead is routed to the best-fit available broker on your team.
+        </p>
         <div className="sm:col-span-2">
           <FormError>{error}</FormError>
           <div className="flex gap-2">

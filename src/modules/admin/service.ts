@@ -9,6 +9,12 @@ export async function getAdminDashboardStats() {
     activeLeads,
     pendingApplications,
     complianceIssues,
+    activeDeals,
+    closedDeals,
+    revenueAgg,
+    commissionAgg,
+    totalLeads,
+    closedLeads,
   ] = await Promise.all([
     prisma.partner.count(),
     prisma.broker.count({ where: { verificationStatus: { in: ["PLATFORM_VERIFIED", "OFFICIAL_SOURCE_VERIFIED"] } } }),
@@ -16,6 +22,12 @@ export async function getAdminDashboardStats() {
     prisma.lead.count({ where: { status: { notIn: ["CLOSED", "LOST"] } } }),
     prisma.partnerApplication.count({ where: { status: { in: ["PENDING_VERIFICATION", "UNDER_REVIEW"] } } }),
     prisma.complianceDocument.count({ where: { verificationStatus: { in: ["PENDING", "EXPIRED", "REJECTED"] } } }),
+    prisma.deal.count({ where: { stage: { notIn: ["CLOSED", "CANCELLED"] } } }),
+    prisma.deal.count({ where: { stage: "CLOSED" } }),
+    prisma.deal.aggregate({ where: { stage: "CLOSED" }, _sum: { value: true } }),
+    prisma.commission.aggregate({ where: { status: { in: ["EXPECTED", "APPROVED", "PAID"] } }, _sum: { amount: true } }),
+    prisma.lead.count(),
+    prisma.lead.count({ where: { status: "CLOSED" } }),
   ]);
 
   return {
@@ -25,6 +37,11 @@ export async function getAdminDashboardStats() {
     activeLeads,
     pendingApplications,
     complianceIssues,
+    activeDeals,
+    closedDeals,
+    revenue: Number(revenueAgg._sum.value ?? 0),
+    commission: Number(commissionAgg._sum.amount ?? 0),
+    conversionRate: totalLeads > 0 ? Math.round((closedLeads / totalLeads) * 100) : 0,
   };
 }
 

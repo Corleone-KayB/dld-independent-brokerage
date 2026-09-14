@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BedDouble, Bath, Ruler, MapPin, Car } from "lucide-react";
-import { getPropertyBySlug, getSimilarProperties } from "@/modules/properties/service";
+import { getPropertyBySlug, getSimilarProperties, recordPropertyView } from "@/modules/properties/service";
 import { PropertyCard } from "@/components/property/property-card";
 import { VerificationBadge } from "@/components/compliance/verification-badge";
 import { WhatsAppButton } from "@/components/ui/whatsapp-button";
@@ -15,13 +15,19 @@ import { PROPERTY_PURPOSE_LABELS, PROPERTY_TYPE_LABELS } from "@/lib/constants";
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const property = await getPropertyBySlug(slug);
-  return { title: property?.title ?? "Property" };
+  if (!property) return { title: "Property" };
+  return {
+    title: property.seoTitle || property.title,
+    description: property.seoDescription || property.description || undefined,
+  };
 }
 
 export default async function PropertyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const property = await getPropertyBySlug(slug);
   if (!property) notFound();
+
+  recordPropertyView(property.id, property.brokerId);
 
   const similar = await getSimilarProperties(property.id, property.community, property.purpose);
   const whatsappMessage = `Hi, I'm interested in "${property.title}" (${formatAed(property.price)}) listed on DLD Independent Brokerage Partners.`;
@@ -138,7 +144,13 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                 className="mt-2"
               />
               <div className="mt-4 flex flex-col gap-2">
-                <WhatsAppButton message={whatsappMessage} size="md">
+                <WhatsAppButton
+                  message={whatsappMessage}
+                  size="md"
+                  trackType="WHATSAPP_BROKER"
+                  brokerId={property.broker.id}
+                  propertyId={property.id}
+                >
                   WhatsApp Broker
                 </WhatsAppButton>
               </div>
@@ -152,7 +164,13 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               schedule a viewing.
             </p>
             <div className="mt-4">
-              <WhatsAppButton message={whatsappMessage} size="md" className="w-full">
+              <WhatsAppButton
+                message={whatsappMessage}
+                size="md"
+                className="w-full"
+                trackType="WHATSAPP_PROPERTY"
+                propertyId={property.id}
+              >
                 WhatsApp About Property
               </WhatsAppButton>
             </div>

@@ -3,24 +3,32 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LayoutDashboard, Users, Building2, Calendar, ShieldCheck, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, Building2, Calendar, ShieldCheck, LogOut, Landmark, Handshake, Wallet, Sparkles, Bot } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import type { AppRole } from "@/server/rbac/permissions";
 
 const NAV_ITEMS = [
   { href: "/partner/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/partner/dashboard/leads", label: "Leads", icon: Users },
+  { href: "/partner/dashboard/marketplace", label: "Marketplace", icon: Sparkles },
   { href: "/partner/dashboard/clients", label: "Clients", icon: Users },
   { href: "/partner/dashboard/properties", label: "Properties", icon: Building2 },
+  { href: "/partner/dashboard/deals", label: "Deals", icon: Handshake },
+  { href: "/partner/dashboard/commissions", label: "Commissions", icon: Wallet },
   { href: "/partner/dashboard/appointments", label: "Appointments", icon: Calendar },
+  { href: "/partner/dashboard/assistant", label: "Assistant", icon: Bot },
   { href: "/partner/dashboard/compliance", label: "Compliance", icon: ShieldCheck },
 ];
 
-export function DashboardNav() {
+const DEVELOPER_NAV_ITEM = { href: "/partner/dashboard/developer", label: "Developer", icon: Landmark };
+
+export function DashboardNav({ roles }: { roles: AppRole[] }) {
   const pathname = usePathname();
+  const items = roles.includes("DEVELOPER") ? [...NAV_ITEMS, DEVELOPER_NAV_ITEM] : NAV_ITEMS;
 
   return (
     <nav className="flex h-full flex-col gap-1 p-4">
-      {NAV_ITEMS.map((item) => {
+      {items.map((item) => {
         const active = pathname === item.href;
         return (
           <Link

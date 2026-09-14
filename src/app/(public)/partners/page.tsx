@@ -42,6 +42,16 @@ export default function PartnersPage() {
             </Card>
           ))}
         </div>
+
+        <Card className="mt-6 flex flex-wrap items-center justify-between gap-4 border-champagne/30 bg-champagne/10 p-6">
+          <div>
+            <p className="font-display text-lg font-semibold text-charcoal">Property Owner? Skip the application.</p>
+            <p className="mt-1 text-sm text-charcoal/60">
+              List your property directly and we&apos;ll match you with a verified broker.
+            </p>
+          </div>
+          <Button href="/list-property" variant="primary">List My Property</Button>
+        </Card>
       </section>
 
       <section className="bg-ivory py-16">

@@ -4,10 +4,21 @@ import { getSessionUser } from "@/server/rbac/guard";
 import { anyRoleHasPermission, PERMISSIONS } from "@/server/rbac/permissions";
 import { AdminNav } from "@/components/admin/admin-nav";
 
+const ADMIN_CONSOLE_PERMISSIONS = [
+  PERMISSIONS.PARTNERS_VIEW_APPLICATIONS,
+  PERMISSIONS.PROPERTIES_MANAGE_ALL,
+  PERMISSIONS.DEALS_MANAGE_ALL,
+  PERMISSIONS.COMMISSIONS_MANAGE,
+  PERMISSIONS.ANALYTICS_VIEW,
+  PERMISSIONS.MARKETING_MANAGE,
+  PERMISSIONS.AUDIT_VIEW,
+];
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await getSessionUser();
   if (!user) redirect("/partner/login?callbackUrl=/admin");
-  if (!anyRoleHasPermission(user.roles, PERMISSIONS.PARTNERS_VIEW_APPLICATIONS)) {
+  const canAccessAdmin = ADMIN_CONSOLE_PERMISSIONS.some((permission) => anyRoleHasPermission(user.roles, permission));
+  if (!canAccessAdmin) {
     redirect("/partner/login");
   }
 

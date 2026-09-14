@@ -3,16 +3,20 @@ import { prisma } from "@/server/db/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PropertyStatusActions } from "@/components/admin/property-status-actions";
+import { PropertyBrokerSelect } from "@/components/admin/property-broker-select";
 import { formatAed } from "@/lib/utils/format";
 
 export const metadata: Metadata = { title: "Properties" };
 
 export default async function AdminPropertiesPage() {
-  const properties = await prisma.property.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 100,
-    include: { broker: { select: { name: true } } },
-  });
+  const [properties, brokers] = await Promise.all([
+    prisma.property.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 100,
+      include: { broker: { select: { name: true } } },
+    }),
+    prisma.broker.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -28,15 +32,21 @@ export default async function AdminPropertiesPage() {
           {properties.map((property) => (
             <Card key={property.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
               <div>
-                <p className="font-medium text-charcoal">{property.title}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium text-charcoal">{property.title}</p>
+                  {property.ownerEmail && <Badge tone="champagne">Owner Submission</Badge>}
+                  {property.matchRequested && <Badge tone="warning">Match Requested</Badge>}
+                </div>
                 <p className="text-xs text-charcoal/50">
-                  {property.broker?.name ?? "Unassigned"} · {formatAed(property.price)}
+                  {formatAed(property.price)}
+                  {property.ownerName ? ` · Owner: ${property.ownerName} (${property.ownerEmail}, ${property.ownerPhone})` : ""}
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <Badge tone={property.status === "PUBLISHED" ? "success" : property.status === "PENDING_REVIEW" ? "warning" : "neutral"}>
+                <Badge tone={property.status === "PUBLISHED" ? "success" : property.status === "PENDING_REVIEW" || property.status === "DRAFT" ? "warning" : "neutral"}>
                   {property.status.replace("_", " ")}
                 </Badge>
+                <PropertyBrokerSelect propertyId={property.id} brokerId={property.brokerId} brokers={brokers} />
                 <PropertyStatusActions propertyId={property.id} currentStatus={property.status} />
               </div>
             </Card>
