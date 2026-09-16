@@ -1,13 +1,8 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { env } from "@/lib/env";
-import { verifySignedKey } from "@/server/storage";
+import { storage, verifySignedKey } from "@/server/storage";
 import { requireSessionUser, ownsPartnerResource, ForbiddenError, toErrorResponse } from "@/server/rbac/guard";
 import { PERMISSIONS } from "@/server/rbac/permissions";
 import { prisma } from "@/server/db/client";
 import { apiError } from "@/lib/utils/api-response";
-
-const UPLOAD_ROOT = path.resolve(process.cwd(), env.UPLOAD_DIR);
 
 /**
  * Serves private compliance documents. Never public: requires both a valid
@@ -31,13 +26,8 @@ export async function GET(request: Request) {
       throw new ForbiddenError();
     }
 
-    const filePath = path.resolve(UPLOAD_ROOT, key);
-    if (!filePath.startsWith(UPLOAD_ROOT)) {
-      return apiError("INVALID_KEY", "Invalid document key", 400);
-    }
-
-    const buffer = await fs.readFile(filePath);
-    return new Response(buffer, {
+    const buffer = await storage.read(key);
+    return new Response(new Uint8Array(buffer), {
       headers: {
         "Content-Type": document.mimeType || "application/octet-stream",
         "Content-Disposition": `inline; filename="${document.name}"`,

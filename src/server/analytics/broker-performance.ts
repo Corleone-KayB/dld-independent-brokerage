@@ -11,6 +11,16 @@ export interface BrokerPerformance {
   closedDeals: number;
   totalCommissionEarned: number;
   performanceScore: number;
+  network: NetworkActivity;
+}
+
+export interface NetworkActivity {
+  activeConnections: number;
+  referralsCompleted: number;
+  dealCollaborations: number;
+  listingsShared: number;
+  reviewCount: number;
+  rating: number | null;
 }
 
 const WEIGHTS = { conversion: 35, closedDeals: 30, commission: 20, listings: 15 };
@@ -21,12 +31,46 @@ const WEIGHTS = { conversion: 35, closedDeals: 30, commission: 20, listings: 15 
  * queryable activity: conversion rate, closed deals, commission earned,
  * active listings. No external rating service is called.
  */
+/**
+ * Phase 3: DLD Independent Brokerage Network activity — deliberately kept
+ * separate from performanceScore's weighting rather than blended into it,
+ * since no business decision assigned network activity a weight in that
+ * score. Reported as its own set of counts instead.
+ */
+export async function getNetworkActivity(brokerId: string): Promise<NetworkActivity> {
+  const [activeConnections, referralsCompleted, dealCollaborations, listingsShared, reviewCount, broker] =
+    await Promise.all([
+      prisma.networkConnection.count({
+        where: { status: "ACCEPTED", OR: [{ brokerAId: brokerId }, { brokerBId: brokerId }] },
+      }),
+      prisma.referral.count({
+        where: {
+          status: { in: ["CONVERTED", "CLOSED"] },
+          OR: [{ referringBrokerId: brokerId }, { receivingBrokerId: brokerId }],
+        },
+      }),
+      prisma.dealCollaborator.count({ where: { brokerId, status: "ACCEPTED" } }),
+      prisma.propertyShare.count({ where: { sharingBrokerId: brokerId, status: "ACTIVE" } }),
+      prisma.brokerReview.count({ where: { revieweeBrokerId: brokerId } }),
+      prisma.broker.findUnique({ where: { id: brokerId }, select: { rating: true } }),
+    ]);
+
+  return {
+    activeConnections,
+    referralsCompleted,
+    dealCollaborations,
+    listingsShared,
+    reviewCount,
+    rating: broker?.rating ?? null,
+  };
+}
+
 export async function rankBrokerPerformance(): Promise<BrokerPerformance[]> {
   const brokers = await prisma.broker.findMany({ select: { id: true, name: true } });
 
   const stats = await Promise.all(
     brokers.map(async (broker) => {
-      const [activeListings, totalLeads, closedLeads, closedDeals, commissionAgg] = await Promise.all([
+      const [activeListings, totalLeads, closedLeads, closedDeals, commissionAgg, network] = await Promise.all([
         prisma.property.count({ where: { brokerId: broker.id, status: "PUBLISHED" } }),
         prisma.lead.count({ where: { brokerId: broker.id } }),
         prisma.lead.count({ where: { brokerId: broker.id, status: "CLOSED" } }),
@@ -35,12 +79,22 @@ export async function rankBrokerPerformance(): Promise<BrokerPerformance[]> {
           where: { brokerId: broker.id, status: { in: ["APPROVED", "PAID"] } },
           _sum: { amount: true },
         }),
+        getNetworkActivity(broker.id),
       ]);
 
       const conversionRatePercent = totalLeads > 0 ? (closedLeads / totalLeads) * 100 : 0;
       const totalCommissionEarned = Number(commissionAgg._sum.amount ?? 0);
 
-      return { broker, activeListings, totalLeads, closedLeads, conversionRatePercent, closedDeals, totalCommissionEarned };
+      return {
+        broker,
+        activeListings,
+        totalLeads,
+        closedLeads,
+        conversionRatePercent,
+        closedDeals,
+        totalCommissionEarned,
+        network,
+      };
     }),
   );
 
@@ -67,6 +121,7 @@ export async function rankBrokerPerformance(): Promise<BrokerPerformance[]> {
         closedDeals: s.closedDeals,
         totalCommissionEarned: s.totalCommissionEarned,
         performanceScore,
+        network: s.network,
       };
     })
     .sort((a, b) => b.performanceScore - a.performanceScore);

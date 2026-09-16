@@ -1,6 +1,11 @@
 import "server-only";
 import { auth } from "@/server/auth/config";
-import { anyRoleHasPermission, type AppRole, type Permission } from "./permissions";
+import { anyRoleHasPermission, type Permission } from "./permissions";
+import { RateLimitError } from "@/server/security/rate-limit";
+import { ownsPartnerResource, isInvolvedBroker, type SessionUser } from "./ownership";
+
+export type { SessionUser };
+export { ownsPartnerResource, isInvolvedBroker };
 
 export class UnauthorizedError extends Error {
   status = 401;
@@ -16,15 +21,6 @@ export class ForbiddenError extends Error {
     super(message);
     this.name = "ForbiddenError";
   }
-}
-
-export interface SessionUser {
-  id: string;
-  email: string;
-  name: string | null;
-  roles: AppRole[];
-  partnerId: string | null;
-  brokerId: string | null;
 }
 
 /**
@@ -66,18 +62,8 @@ export async function requireAnyPermission(permissions: Permission[]): Promise<S
   return user;
 }
 
-/** True if the user owns the partner-scoped resource, or holds a broader manage-all permission. */
-export function ownsPartnerResource(
-  user: SessionUser,
-  resourcePartnerId: string | null | undefined,
-  broadPermission: Permission,
-): boolean {
-  if (anyRoleHasPermission(user.roles, broadPermission)) return true;
-  return !!user.partnerId && user.partnerId === resourcePartnerId;
-}
-
 export function toErrorResponse(error: unknown) {
-  if (error instanceof UnauthorizedError || error instanceof ForbiddenError) {
+  if (error instanceof UnauthorizedError || error instanceof ForbiddenError || error instanceof RateLimitError) {
     return {
       status: error.status,
       body: {

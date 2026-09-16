@@ -17,7 +17,10 @@ export async function listCommissions(filters: { partnerId?: string; brokerId?: 
 }
 
 export async function getCommission(id: string) {
-  return prisma.commission.findUnique({ where: { id }, include: { deal: true } });
+  return prisma.commission.findUnique({
+    where: { id },
+    include: { deal: { include: { property: true, client: true } } },
+  });
 }
 
 export async function updateCommissionStatus(id: string, input: CommissionStatusUpdateInput) {

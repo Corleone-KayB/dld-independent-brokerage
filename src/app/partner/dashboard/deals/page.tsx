@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getSessionUser } from "@/server/rbac/guard";
 import { listDeals } from "@/modules/deals/service";
 import { listClients } from "@/modules/crm/service";
@@ -46,7 +47,11 @@ export default async function DealsPage() {
             <tbody>
               {deals.map((deal) => (
                 <tr key={deal.id} className="border-b border-charcoal/5 last:border-0">
-                  <td className="px-4 py-3">{deal.client?.name ?? "—"}</td>
+                  <td className="px-4 py-3">
+                    <Link href={`/partner/dashboard/deals/${deal.id}`} className="underline hover:text-charcoal">
+                      {deal.client?.name ?? "Deal"}
+                    </Link>
+                  </td>
                   <td className="px-4 py-3">{deal.property?.title ?? "—"}</td>
                   <td className="px-4 py-3">{deal.value ? formatAed(deal.value) : "—"}</td>
                   <td className="px-4 py-3">

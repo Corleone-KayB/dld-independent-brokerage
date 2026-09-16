@@ -74,3 +74,32 @@ Each of the 8 calculators (`/calculators`) produces a result from user-entered n
 
 ## A23 — Automated Marketing
 Marketing Manager (or Admin) can publish a blog post and activate a homepage banner via `/admin/marketing`. Published posts appear at `/blog`; a non-marketing role attempting to create a post via direct API call gets 403.
+
+## Phase 3 — DLD Independent Brokerage Network
+
+## A24 — Network membership & connections
+A broker opts into the network (`Broker.networkOptIn`), appears in another opted-in broker's discovery list, sends a connection request, and the recipient accepts it. Neither side can message the other before the connection is `ACCEPTED`; a duplicate request while one is pending is rejected regardless of which side re-sends it.
+
+## A25 — Secure messaging
+Two connected brokers can exchange messages via `/partner/dashboard/messages`. A broker who is not a participant in a conversation cannot read or send messages in it (rejected, not just hidden in the UI). Messaging without a prior accepted connection is rejected.
+
+## A26 — Referrals & lead exchange
+A broker sends a referral (client snapshot + proposed commission split) to another broker with no prior connection required. The receiving broker accepts it, which locks the proposed split into an immutable accepted split and creates a real Client+Lead in their own CRM. A second referral request to the same broker beyond the daily limit is rejected.
+
+## A27 — Deal collaboration
+A deal's own broker invites another broker as a collaborator; the invited broker accepts via `/partner/dashboard/collaborations`. A broker who is neither the deal owner, an admin, nor a collaborator on that deal cannot view the deal (404, not 403, to avoid confirming its existence).
+
+## A28 — Listing/lead sharing
+A broker shares one of their own listings with another broker (no connection required); the recipient sees it under "Shared With Me." Revoking the share removes it from the recipient's list; re-sharing after a revoke reactivates the same record rather than duplicating it.
+
+## A29 — Commission splitting
+Only Finance/Admin (`commissions:manage`) can create a split on a commission, approve it, reject it, or mark it paid — a broker attempting any of these via direct API call gets 403. Splits on one commission cannot be allocated beyond 100% in total. A Finance Manager who also holds a Broker profile cannot approve/reject/pay a split that pays out to themselves.
+
+## A30 — Reputation (peer reviews)
+A broker can leave a review for another broker only after a deal they collaborated on together is `CLOSED`, or a referral between them is `CONVERTED`/`CLOSED` — attempting to review before that point is rejected. A second review for the same deal/referral by the same reviewer is rejected. The reviewee's aggregate rating recomputes automatically and appears (as a count/rating only, never an AED figure) on their public profile.
+
+## A31 — Network performance tracking
+The admin Broker Performance Ranking (`/admin/analytics`) shows each broker's active connections, referrals completed, deal collaborations, and peer rating alongside the existing weighted score. A broker's own dashboard overview shows the same activity for themselves.
+
+## A32 — Phase 3 regression
+All MVP (A01–A15) and Phase 2 (A16–A23) acceptance tests continue to pass unmodified — Phase 3 introduces no changes to any pre-existing model column, permission, or page behavior.

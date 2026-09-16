@@ -57,4 +57,39 @@ describe("RBAC permission matrix", () => {
     expect(roleHasPermission("BROKER", PERMISSIONS.ANALYTICS_VIEW)).toBe(false);
     expect(roleHasPermission("SUPPORT_AGENT", PERMISSIONS.ANALYTICS_VIEW)).toBe(false);
   });
+
+  // Phase 3: DLD Independent Brokerage Network
+  it("grants brokers the full set of network permissions (connect, message, referrals, collaborate, splits-view-own, share, review)", () => {
+    for (const permission of [
+      PERMISSIONS.NETWORK_CONNECT,
+      PERMISSIONS.NETWORK_MESSAGE,
+      PERMISSIONS.REFERRALS_MANAGE_OWN,
+      PERMISSIONS.DEALS_COLLABORATE,
+      PERMISSIONS.COMMISSION_SPLITS_VIEW_OWN,
+      PERMISSIONS.LISTINGS_SHARE_OWN,
+      PERMISSIONS.REVIEWS_SUBMIT,
+    ]) {
+      expect(roleHasPermission("BROKER", permission)).toBe(true);
+      expect(roleHasPermission("PARTNER_COMPANY", permission)).toBe(true);
+    }
+  });
+
+  it("denies network permissions to roles with no broker identity (deny by default)", () => {
+    expect(roleHasPermission("BUYER", PERMISSIONS.NETWORK_CONNECT)).toBe(false);
+    expect(roleHasPermission("DEVELOPER", PERMISSIONS.NETWORK_MESSAGE)).toBe(false);
+    expect(roleHasPermission("SUPPORT_AGENT", PERMISSIONS.REFERRALS_MANAGE_OWN)).toBe(false);
+  });
+
+  it("restricts network dispute oversight to Super Admin, Administrator, and Compliance Manager", () => {
+    expect(roleHasPermission("SUPER_ADMIN", PERMISSIONS.NETWORK_MANAGE_ALL)).toBe(true);
+    expect(roleHasPermission("ADMINISTRATOR", PERMISSIONS.NETWORK_MANAGE_ALL)).toBe(true);
+    expect(roleHasPermission("COMPLIANCE_MANAGER", PERMISSIONS.NETWORK_MANAGE_ALL)).toBe(true);
+    expect(roleHasPermission("BROKER", PERMISSIONS.NETWORK_MANAGE_ALL)).toBe(false);
+    expect(roleHasPermission("SALES_MANAGER", PERMISSIONS.NETWORK_MANAGE_ALL)).toBe(false);
+  });
+
+  it("reuses commissions:manage for split approval rather than inventing a duplicate permission", () => {
+    expect(roleHasPermission("FINANCE_MANAGER", PERMISSIONS.COMMISSIONS_MANAGE)).toBe(true);
+    expect(roleHasPermission("BROKER", PERMISSIONS.COMMISSIONS_MANAGE)).toBe(false);
+  });
 });

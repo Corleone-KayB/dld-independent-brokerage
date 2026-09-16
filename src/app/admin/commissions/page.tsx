@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { listCommissions, getCommissionSummary } from "@/modules/commissions/service";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -51,6 +52,12 @@ export default async function AdminCommissionsPage() {
               <div className="flex items-center gap-3">
                 <Badge tone={STATUS_TONE[commission.status]}>{COMMISSION_STATUS_LABELS[commission.status]}</Badge>
                 <CommissionStatusActions commissionId={commission.id} status={commission.status} />
+                <Link
+                  href={`/admin/commissions/${commission.id}/splits`}
+                  className="text-xs text-charcoal/60 underline hover:text-charcoal"
+                >
+                  Manage splits
+                </Link>
               </div>
             </Card>
           ))}

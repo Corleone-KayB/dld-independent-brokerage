@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
 import { getSessionUser } from "@/server/rbac/guard";
 import { listCommissions, getCommissionSummary } from "@/modules/commissions/service";
+import { listMySplits } from "@/modules/commission-splits/service";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { formatAed } from "@/lib/utils/format";
 import { COMMISSION_STATUS_LABELS } from "@/lib/constants";
+
+const SPLIT_STATUS_TONE: Record<string, BadgeProps["tone"]> = {
+  PENDING: "warning",
+  APPROVED: "success",
+  PAID: "success",
+  REJECTED: "danger",
+};
 
 export const metadata: Metadata = { title: "Commissions" };
 
@@ -20,9 +28,10 @@ export default async function CommissionsPage() {
   const user = await getSessionUser();
   if (!user?.partnerId) return <p className="text-charcoal/60">No partner account linked.</p>;
 
-  const [commissions, summary] = await Promise.all([
+  const [commissions, summary, mySplits] = await Promise.all([
     listCommissions({ partnerId: user.partnerId }),
     getCommissionSummary({ partnerId: user.partnerId }),
+    user.brokerId ? listMySplits(user.brokerId) : Promise.resolve([]),
   ]);
 
   return (
@@ -58,6 +67,39 @@ export default async function CommissionsPage() {
           ))}
         </div>
       )}
+
+      <section>
+        <h2 className="mb-3 font-display text-lg font-semibold text-charcoal">
+          Split Payouts{mySplits.length > 0 && ` (${mySplits.length})`}
+        </h2>
+        <p className="mb-3 text-sm text-charcoal/60">
+          Your share of commissions from deals you collaborated or referred on.
+        </p>
+        {mySplits.length === 0 ? (
+          <p className="text-sm text-charcoal/50">No split payouts yet.</p>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {mySplits.map((s) => (
+              <Card key={s.id} className="p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-medium text-charcoal">
+                      {s.commission.deal.property?.title ?? s.commission.deal.client?.name ?? "Deal"}
+                    </p>
+                    <p className="text-xs text-charcoal/50">
+                      {s.percent.toString()}% · {formatAed(s.amount)}
+                    </p>
+                  </div>
+                  <Badge tone={SPLIT_STATUS_TONE[s.status]}>{s.status}</Badge>
+                </div>
+                {s.status === "REJECTED" && s.rejectionReason && (
+                  <p className="mt-1 text-xs text-red-600">Reason: {s.rejectionReason}</p>
+                )}
+              </Card>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

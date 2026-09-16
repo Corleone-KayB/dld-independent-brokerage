@@ -23,6 +23,12 @@ describe("Advanced Analytics + Broker Performance Ranking integration (requires 
     for (const broker of ranking) {
       expect(broker.performanceScore).toBeGreaterThanOrEqual(0);
       expect(broker.performanceScore).toBeLessThanOrEqual(100);
+      // Phase 3: network activity is reported alongside, never blended into performanceScore.
+      expect(broker.network.activeConnections).toBeGreaterThanOrEqual(0);
+      expect(broker.network.referralsCompleted).toBeGreaterThanOrEqual(0);
+      expect(broker.network.dealCollaborations).toBeGreaterThanOrEqual(0);
+      expect(broker.network.listingsShared).toBeGreaterThanOrEqual(0);
+      expect(broker.network.reviewCount).toBeGreaterThanOrEqual(0);
     }
     // sorted descending
     for (let i = 1; i < ranking.length; i++) {

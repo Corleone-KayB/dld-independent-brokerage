@@ -11,6 +11,7 @@ export interface StoredFile {
  */
 export interface StorageProvider {
   upload(input: { key: string; buffer: Buffer; mimeType: string }): Promise<StoredFile>;
+  read(key: string): Promise<Buffer>;
   getSignedUrl(key: string, expiresInSeconds?: number): Promise<string>;
   delete(key: string): Promise<void>;
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LayoutDashboard, Users, Building2, Calendar, ShieldCheck, LogOut, Landmark, Handshake, Wallet, Sparkles, Bot } from "lucide-react";
+import { LayoutDashboard, Users, Building2, Calendar, ShieldCheck, LogOut, Landmark, Handshake, Wallet, Sparkles, Bot, Network, MessageCircle, Repeat, Users2, Share2, Star } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import type { AppRole } from "@/server/rbac/permissions";
 
@@ -11,9 +11,15 @@ const NAV_ITEMS = [
   { href: "/partner/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/partner/dashboard/leads", label: "Leads", icon: Users },
   { href: "/partner/dashboard/marketplace", label: "Marketplace", icon: Sparkles },
+  { href: "/partner/dashboard/network", label: "Network", icon: Network },
+  { href: "/partner/dashboard/messages", label: "Messages", icon: MessageCircle },
+  { href: "/partner/dashboard/referrals", label: "Referrals", icon: Repeat },
+  { href: "/partner/dashboard/reviews", label: "Reviews", icon: Star },
   { href: "/partner/dashboard/clients", label: "Clients", icon: Users },
   { href: "/partner/dashboard/properties", label: "Properties", icon: Building2 },
+  { href: "/partner/dashboard/shared-with-me", label: "Shared With Me", icon: Share2 },
   { href: "/partner/dashboard/deals", label: "Deals", icon: Handshake },
+  { href: "/partner/dashboard/collaborations", label: "Collaborations", icon: Users2 },
   { href: "/partner/dashboard/commissions", label: "Commissions", icon: Wallet },
   { href: "/partner/dashboard/appointments", label: "Appointments", icon: Calendar },
   { href: "/partner/dashboard/assistant", label: "Assistant", icon: Bot },

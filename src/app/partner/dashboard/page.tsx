@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getSessionUser } from "@/server/rbac/guard";
 import { prisma } from "@/server/db/client";
 import { listLeads } from "@/modules/leads/service";
+import { getNetworkActivity } from "@/server/analytics/broker-performance";
 import { Card } from "@/components/ui/card";
 import { LEAD_STATUS_LABELS, LEAD_STATUS_ORDER } from "@/lib/constants";
 import { formatAed } from "@/lib/utils/format";
@@ -41,6 +42,8 @@ export default async function DashboardOverviewPage() {
     listLeads({ partnerId, brokerId }),
   ]);
 
+  const network = brokerId ? await getNetworkActivity(brokerId) : null;
+
   const conversionRate = totalLeadCount > 0 ? Math.round((closedLeadCount / totalLeadCount) * 100) : 0;
 
   const pipeline = LEAD_STATUS_ORDER.map((status) => ({
@@ -75,6 +78,26 @@ export default async function DashboardOverviewPage() {
           </Card>
         ))}
       </div>
+
+      {network && (
+        <Card className="p-6">
+          <h2 className="font-display text-lg font-semibold text-charcoal">Independent Brokerage Network</h2>
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-5">
+            {[
+              { label: "Connections", value: network.activeConnections },
+              { label: "Referrals Completed", value: network.referralsCompleted },
+              { label: "Deal Collaborations", value: network.dealCollaborations },
+              { label: "Listings Shared", value: network.listingsShared },
+              { label: "Peer Rating", value: network.rating !== null ? network.rating.toFixed(1) : "—" },
+            ].map((stat) => (
+              <div key={stat.label} className="text-center">
+                <p className="font-display text-xl font-semibold text-charcoal">{stat.value}</p>
+                <p className="mt-1 text-xs text-charcoal/50">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       <Card className="p-6">
         <h2 className="font-display text-lg font-semibold text-charcoal">Lead Pipeline</h2>

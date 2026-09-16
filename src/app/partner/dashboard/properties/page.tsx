@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getSessionUser } from "@/server/rbac/guard";
 import { prisma } from "@/server/db/client";
 import { Card } from "@/components/ui/card";
@@ -41,6 +42,12 @@ export default async function DashboardPropertiesPage() {
               </div>
               <p className="mt-2 text-sm text-charcoal/60">{property.community ?? property.city}</p>
               <p className="mt-2 font-display text-lg font-semibold text-champagne-dark">{formatAed(property.price)}</p>
+              <Link
+                href={`/partner/dashboard/properties/${property.id}/sharing`}
+                className="mt-3 inline-block text-xs text-charcoal/60 underline hover:text-charcoal"
+              >
+                Manage sharing
+              </Link>
             </Card>
           ))}
         </div>

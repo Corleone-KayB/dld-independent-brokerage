@@ -108,6 +108,10 @@ export default async function AdminAnalyticsPage() {
                 <th className="py-2 pr-4">Closed Deals</th>
                 <th className="py-2 pr-4">Commission Earned</th>
                 <th className="py-2 pr-4">Listings</th>
+                <th className="py-2 pr-4">Network Connections</th>
+                <th className="py-2 pr-4">Referrals Completed</th>
+                <th className="py-2 pr-4">Deal Collaborations</th>
+                <th className="py-2 pr-4">Peer Rating</th>
               </tr>
             </thead>
             <tbody>
@@ -119,6 +123,12 @@ export default async function AdminAnalyticsPage() {
                   <td className="py-2 pr-4">{broker.closedDeals}</td>
                   <td className="py-2 pr-4">{formatAed(broker.totalCommissionEarned)}</td>
                   <td className="py-2 pr-4">{broker.activeListings}</td>
+                  <td className="py-2 pr-4">{broker.network.activeConnections}</td>
+                  <td className="py-2 pr-4">{broker.network.referralsCompleted}</td>
+                  <td className="py-2 pr-4">{broker.network.dealCollaborations}</td>
+                  <td className="py-2 pr-4">
+                    {broker.network.rating !== null ? `${broker.network.rating.toFixed(1)} (${broker.network.reviewCount})` : "—"}
+                  </td>
                 </tr>
               ))}
             </tbody>
