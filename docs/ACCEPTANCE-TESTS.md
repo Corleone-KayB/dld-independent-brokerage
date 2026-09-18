@@ -103,3 +103,5 @@ The admin Broker Performance Ranking (`/admin/analytics`) shows each broker's ac
 
 ## A32 — Phase 3 regression
 All MVP (A01–A15) and Phase 2 (A16–A23) acceptance tests continue to pass unmodified — Phase 3 introduces no changes to any pre-existing model column, permission, or page behavior.
+
+Redeploy
