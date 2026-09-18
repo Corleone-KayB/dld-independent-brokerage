@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { searchBrokers } from "@/modules/brokers/service";
 import { BrokerCard } from "@/components/broker/broker-card";
 import { Pagination } from "@/components/ui/pagination";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata: Metadata = { title: "Find a Verified Broker" };
 export const dynamic = "force-dynamic";
@@ -20,24 +23,26 @@ export default async function BrokersPage({
 
   return (
     <div className="container-shell py-12">
-      <h1 className="font-display text-3xl font-semibold text-charcoal">Find a Verified Broker</h1>
-      <p className="mt-2 max-w-2xl text-charcoal/60">
-        Search our directory of independent brokers and brokerage partners.
-        Verification badges reflect our own platform review — always confirm
-        official licensing directly with the Dubai Land Department.
-      </p>
+      <PageHeader
+        title="Find a Verified Broker"
+        description="Search our directory of independent brokers and brokerage partners. Verification badges reflect our own platform review — always confirm official licensing directly with the Dubai Land Department."
+      />
 
-      <form className="mt-8 flex max-w-md gap-3" action="/brokers" method="get">
-        <input
+      <form
+        className="mt-8 flex max-w-xl gap-3 rounded-2xl border border-stone/20 bg-soft-white p-3 shadow-elevated"
+        action="/brokers"
+        method="get"
+      >
+        <Input
           type="search"
           name="q"
           defaultValue={q}
           placeholder="Search by name or specialization"
-          className="focus-ring h-11 flex-1 rounded-lg border border-charcoal/15 bg-white px-4 text-sm"
+          className="border-0 bg-transparent"
         />
-        <button className="focus-ring rounded-full bg-champagne px-6 text-sm font-medium text-charcoal hover:bg-champagne-light">
+        <Button type="submit" className="shrink-0">
           Search
-        </button>
+        </Button>
       </form>
 
       {result.items.length === 0 ? (

@@ -30,7 +30,7 @@ export default async function ClientsPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {clients.map((client) => (
             <Link key={client.id} href={`/partner/dashboard/clients/${client.id}`}>
-              <Card className="p-5 transition-shadow hover:shadow-glass">
+              <Card className="p-5 transition-shadow hover:shadow-elevated-hover">
                 <p className="font-display text-base font-semibold text-charcoal">{client.name}</p>
                 <p className="mt-1 text-xs text-charcoal/50">{client.email || client.phone || "No contact info"}</p>
                 <p className="mt-3 text-sm text-charcoal/70">

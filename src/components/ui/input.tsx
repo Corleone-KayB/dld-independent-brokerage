@@ -6,7 +6,7 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
     <input
       ref={ref}
       className={cn(
-        "focus-ring flex h-11 w-full rounded-lg border border-charcoal/15 bg-white px-4 text-sm text-charcoal placeholder:text-charcoal/40 disabled:cursor-not-allowed disabled:opacity-50",
+        "focus-ring flex h-11 w-full rounded-xl border border-stone/30 bg-soft-white px-4 text-sm text-charcoal placeholder:text-charcoal/40 transition-colors hover:border-stone/60 disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       {...props}
@@ -22,7 +22,7 @@ export const Textarea = React.forwardRef<
   <textarea
     ref={ref}
     className={cn(
-      "focus-ring flex min-h-24 w-full rounded-lg border border-charcoal/15 bg-white px-4 py-3 text-sm text-charcoal placeholder:text-charcoal/40 disabled:cursor-not-allowed disabled:opacity-50",
+      "focus-ring flex min-h-24 w-full rounded-xl border border-stone/30 bg-soft-white px-4 py-3 text-sm text-charcoal placeholder:text-charcoal/40 transition-colors hover:border-stone/60 disabled:cursor-not-allowed disabled:opacity-50",
       className,
     )}
     {...props}
@@ -35,7 +35,7 @@ export const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttrib
     <select
       ref={ref}
       className={cn(
-        "focus-ring flex h-11 w-full rounded-lg border border-charcoal/15 bg-white px-4 text-sm text-charcoal disabled:cursor-not-allowed disabled:opacity-50",
+        "focus-ring flex h-11 w-full rounded-xl border border-stone/30 bg-soft-white px-4 text-sm text-charcoal transition-colors hover:border-stone/60 disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       {...props}
@@ -49,7 +49,7 @@ Select.displayName = "Select";
 export function Label({ className, ...props }: React.LabelHTMLAttributes<HTMLLabelElement>) {
   return (
     <label
-      className={cn("mb-1.5 block text-sm font-medium text-charcoal/80", className)}
+      className={cn("mb-1.5 block text-xs font-semibold uppercase tracking-wide text-charcoal/70", className)}
       {...props}
     />
   );

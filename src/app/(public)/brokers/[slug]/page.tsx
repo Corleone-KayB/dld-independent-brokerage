@@ -63,7 +63,7 @@ export default async function BrokerProfilePage({ params }: { params: Promise<{ 
         <Card className="p-6 lg:col-span-1">
           <div className="relative mx-auto h-28 w-28 overflow-hidden rounded-full bg-charcoal/10">
             {broker.photoUrl ? (
-              <Image src={broker.photoUrl} alt={broker.name} fill className="object-cover" />
+              <Image src={broker.photoUrl} alt={broker.name} fill sizes="112px" className="object-cover" />
             ) : (
               <div className="flex h-full items-center justify-center font-display text-3xl text-charcoal/50">
                 {broker.name.charAt(0)}

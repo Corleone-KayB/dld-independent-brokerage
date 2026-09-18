@@ -39,7 +39,7 @@ export default async function ManageProjectPage({ params }: { params: Promise<{ 
       {project.units.length === 0 ? (
         <Card className="p-10 text-center text-charcoal/50">No units yet.</Card>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-charcoal/10 bg-white">
+        <div className="overflow-x-auto rounded-2xl border border-stone/20 bg-soft-white">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-charcoal/10 text-xs uppercase tracking-wide text-charcoal/50">
               <tr>

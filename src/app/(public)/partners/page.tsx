@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PageHero } from "@/components/ui/page-hero";
 import { PARTNER_TYPE_LABELS } from "@/lib/constants";
 
 export const metadata: Metadata = { title: "Become a Partner" };
@@ -17,21 +18,19 @@ const BENEFITS = [
 export default function PartnersPage() {
   return (
     <div>
-      <section className="bg-charcoal py-20 text-ivory">
-        <div className="container-shell">
-          <h1 className="max-w-2xl font-display text-4xl font-semibold sm:text-5xl">
-            Trusted Brokers. Verified Partners. Better Property Decisions.
-          </h1>
-          <p className="mt-6 max-w-xl text-ivory/70">
-            Join a private network of independent brokers and brokerage
-            partners across Dubai. Apply in minutes and get access to our
-            partner dashboard, CRM and compliance tools.
-          </p>
-          <Button href="/partner/apply" size="lg" variant="primary" className="mt-8">
-            Start Application
-          </Button>
-        </div>
-      </section>
+      <PageHero image="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=2400&q=80">
+        <h1 className="max-w-2xl font-display text-4xl font-semibold sm:text-5xl">
+          Trusted Brokers. Verified Partners. Better Property Decisions.
+        </h1>
+        <p className="mt-6 max-w-xl text-ivory/70">
+          Join a private network of independent brokers and brokerage
+          partners across Dubai. Apply in minutes and get access to our
+          partner dashboard, CRM and compliance tools.
+        </p>
+        <Button href="/partner/apply" size="lg" variant="primary" className="mt-8">
+          Start Application
+        </Button>
+      </PageHero>
 
       <section className="container-shell py-16">
         <h2 className="font-display text-2xl font-semibold text-charcoal">Who can join</h2>

@@ -25,7 +25,7 @@ export default async function DeveloperProfilePage({ params }: { params: Promise
         <Card className="p-6 lg:col-span-1">
           <div className="relative mx-auto h-24 w-24 overflow-hidden rounded-full bg-charcoal/10">
             {developer.logoUrl ? (
-              <Image src={developer.logoUrl} alt={developer.name} fill className="object-cover" />
+              <Image src={developer.logoUrl} alt={developer.name} fill sizes="96px" className="object-cover" />
             ) : (
               <div className="flex h-full items-center justify-center font-display text-2xl text-charcoal/50">
                 {developer.name.charAt(0)}

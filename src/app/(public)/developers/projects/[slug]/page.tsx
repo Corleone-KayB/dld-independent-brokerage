@@ -35,7 +35,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         <div className="lg:col-span-2">
           <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-charcoal/5">
             {project.images[0] ? (
-              <Image src={project.images[0].url} alt={project.name} fill className="object-cover" priority />
+              <Image src={project.images[0].url} alt={project.name} fill sizes="(max-width: 1024px) 100vw, 66vw" className="object-cover" priority />
             ) : (
               <div className="flex h-full items-center justify-center text-charcoal/40">Demo image placeholder</div>
             )}
@@ -59,7 +59,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               No units published yet.
             </p>
           ) : (
-            <div className="overflow-x-auto rounded-2xl border border-charcoal/10 bg-white">
+            <div className="overflow-x-auto rounded-2xl border border-stone/20 bg-soft-white">
               <table className="w-full text-left text-sm">
                 <thead className="border-b border-charcoal/10 text-xs uppercase tracking-wide text-charcoal/50">
                   <tr>

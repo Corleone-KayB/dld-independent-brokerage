@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BedDouble, Bath, Ruler, MapPin, Car } from "lucide-react";
 import { getPropertyBySlug, getSimilarProperties, recordPropertyView } from "@/modules/properties/service";
 import { PropertyCard } from "@/components/property/property-card";
+import { PropertyGallery } from "@/components/property/property-gallery";
 import { VerificationBadge } from "@/components/compliance/verification-badge";
 import { WhatsAppButton } from "@/components/ui/whatsapp-button";
 import { Badge } from "@/components/ui/badge";
@@ -42,33 +42,20 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
       <div className="grid gap-10 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <div className="grid gap-2 sm:grid-cols-4">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-charcoal/5 sm:col-span-3 sm:row-span-2">
-              {property.images[0] ? (
-                <Image src={property.images[0].url} alt={property.title} fill className="object-cover" priority />
-              ) : (
-                <div className="flex h-full items-center justify-center text-charcoal/40">Demo image placeholder</div>
-              )}
-            </div>
-            {property.images.slice(1, 3).map((img) => (
-              <div key={img.id} className="relative aspect-square overflow-hidden rounded-2xl bg-charcoal/5">
-                <Image src={img.url} alt={img.alt ?? property.title} fill className="object-cover" />
-              </div>
-            ))}
-          </div>
+          <PropertyGallery images={property.images} title={property.title} />
 
           <div className="mt-8 flex flex-wrap items-start justify-between gap-4">
             <div>
               <Badge tone="champagne">{PROPERTY_PURPOSE_LABELS[property.purpose] ?? property.purpose}</Badge>
               <h1 className="mt-3 font-display text-3xl font-semibold text-charcoal">{property.title}</h1>
               <p className="mt-1 flex items-center gap-1 text-charcoal/60">
-                <MapPin className="h-4 w-4" /> {property.community ?? ""} {property.city}
+                <MapPin className="h-4 w-4" /> {[property.community, property.city].filter(Boolean).join(", ")}
               </p>
             </div>
             <p className="font-display text-3xl font-semibold text-champagne-dark">{formatAed(property.price)}</p>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-6 rounded-2xl border border-charcoal/10 bg-white p-6 text-sm">
+          <div className="mt-6 flex flex-wrap gap-6 rounded-2xl border border-stone/20 bg-soft-white p-6 text-sm">
             {property.bedrooms !== null && (
               <span className="flex items-center gap-2"><BedDouble className="h-5 w-5 text-champagne-dark" /> {property.bedrooms} Bedrooms</span>
             )}
@@ -102,7 +89,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
             </div>
           )}
 
-          <div className="mt-8 grid gap-4 rounded-2xl border border-charcoal/10 bg-white p-6 sm:grid-cols-3">
+          <div className="mt-8 grid gap-4 rounded-2xl border border-stone/20 bg-soft-white p-6 sm:grid-cols-3">
             <div>
               <p className="text-xs uppercase tracking-wide text-charcoal/50">Rental Yield</p>
               <p className="mt-1 font-display text-lg font-semibold text-charcoal">

@@ -30,3 +30,4 @@ body {
 .glass-panel {
   @apply rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md;
 }
+

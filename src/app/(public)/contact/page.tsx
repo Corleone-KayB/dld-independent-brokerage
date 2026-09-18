@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import { WhatsAppButton } from "@/components/ui/whatsapp-button";
 import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata: Metadata = { title: "Contact" };
 
 export default function ContactPage() {
   return (
     <div className="container-shell max-w-2xl py-16">
-      <h1 className="font-display text-3xl font-semibold text-charcoal">Contact Us</h1>
-      <p className="mt-3 text-charcoal/60">
-        Have a question about properties, becoming a partner, or an existing
-        application? Reach out to our support team.
-      </p>
+      <PageHeader
+        title="Contact Us"
+        description="Have a question about properties, becoming a partner, or an existing application? Reach out to our support team."
+      />
 
       <Card className="mt-8 p-6">
         <p className="font-medium text-charcoal">WhatsApp Support</p>

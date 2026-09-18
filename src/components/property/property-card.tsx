@@ -14,7 +14,7 @@ export function PropertyCard({ property }: { property: PropertyWithImages }) {
 
   return (
     <Link href={`/properties/${property.slug}`} className="focus-ring block rounded-2xl">
-      <Card className="group overflow-hidden transition-shadow hover:shadow-glass">
+      <Card className="group overflow-hidden transition-shadow hover:shadow-elevated-hover">
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-charcoal/5">
           {image ? (
             <Image

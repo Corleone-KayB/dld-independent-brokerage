@@ -59,7 +59,7 @@ export function MessageThread({ conversationId, selfBrokerId }: { conversationId
   }
 
   return (
-    <div className="flex h-[60vh] flex-col rounded-2xl border border-charcoal/10 bg-white">
+    <div className="flex h-[60vh] flex-col rounded-2xl border border-stone/20 bg-soft-white">
       <div className="flex-1 space-y-3 overflow-y-auto p-4">
         {messages.length === 0 ? (
           <p className="text-center text-sm text-charcoal/40">No messages yet — say hello.</p>

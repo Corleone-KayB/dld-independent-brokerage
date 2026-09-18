@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function PartnerLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-ivory">
-      <header className="border-b border-charcoal/10 bg-white">
+      <header className="border-b border-stone/20 bg-soft-white">
         <div className="container-shell flex h-16 items-center justify-between">
           <Link href="/" className="font-display text-base font-semibold text-charcoal">
             DLD Independent Brokerage Partners

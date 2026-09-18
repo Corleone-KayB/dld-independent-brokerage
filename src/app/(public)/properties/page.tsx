@@ -4,6 +4,7 @@ import { propertySearchSchema } from "@/lib/validations/property";
 import { PropertyFilters } from "@/components/property/property-filters";
 import { PropertyCard } from "@/components/property/property-card";
 import { Pagination } from "@/components/ui/pagination";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata: Metadata = { title: "Properties" };
 export const dynamic = "force-dynamic";
@@ -30,10 +31,10 @@ export default async function PropertiesPage({
 
   return (
     <div className="container-shell py-12">
-      <h1 className="font-display text-3xl font-semibold text-charcoal">Property Marketplace</h1>
-      <p className="mt-2 text-charcoal/60">
-        {result.total} propert{result.total === 1 ? "y" : "ies"} available across Dubai.
-      </p>
+      <PageHeader
+        title="Property Marketplace"
+        description={`${result.total} propert${result.total === 1 ? "y" : "ies"} available across Dubai.`}
+      />
 
       <div className="mt-8">
         <PropertyFilters />

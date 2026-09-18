@@ -55,7 +55,7 @@ export function SiteHeader() {
       </div>
 
       {open && (
-        <div className="border-t border-charcoal/10 bg-ivory lg:hidden">
+        <div className="motion-safe:animate-fade-in border-t border-charcoal/10 bg-ivory lg:hidden">
           <nav className="container-shell flex flex-col gap-1 py-4">
             {MAIN_NAV.map((item) => (
               <Link

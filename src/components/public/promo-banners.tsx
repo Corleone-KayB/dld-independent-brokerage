@@ -14,7 +14,7 @@ export async function PromoBanners({ placement = "HOMEPAGE" }: { placement?: str
           <Card key={banner.id} className="relative overflow-hidden p-6">
             {banner.imageUrl && (
               <div className="absolute inset-0 -z-10">
-                <Image src={banner.imageUrl} alt={banner.title} fill className="object-cover opacity-20" />
+                <Image src={banner.imageUrl} alt={banner.title} fill sizes="(max-width: 640px) 100vw, 50vw" className="object-cover opacity-20" />
               </div>
             )}
             <p className="font-display text-lg font-semibold text-charcoal">{banner.title}</p>

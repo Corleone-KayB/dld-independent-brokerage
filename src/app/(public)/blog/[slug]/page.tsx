@@ -25,7 +25,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     <article className="container-shell max-w-3xl py-12">
       {post.coverImageUrl && (
         <div className="relative mb-8 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-charcoal/5">
-          <Image src={post.coverImageUrl} alt={post.title} fill className="object-cover" priority />
+          <Image src={post.coverImageUrl} alt={post.title} fill sizes="(min-width: 768px) 768px, 100vw" className="object-cover" priority />
         </div>
       )}
       <p className="text-sm text-charcoal/50">{post.publishedAt ? formatDate(post.publishedAt) : ""}</p>

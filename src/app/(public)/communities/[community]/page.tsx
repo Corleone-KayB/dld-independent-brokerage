@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { searchProperties } from "@/modules/properties/service";
 import { propertySearchSchema } from "@/lib/validations/property";
 import { PropertyCard } from "@/components/property/property-card";
+import { PageHeader } from "@/components/ui/page-header";
 import { COMMUNITIES } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
@@ -24,10 +25,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ comm
 
   return (
     <div className="container-shell py-12">
-      <h1 className="font-display text-3xl font-semibold text-charcoal">{community}</h1>
-      <p className="mt-2 max-w-2xl text-charcoal/60">
-        Discover available properties and featured brokers in {community}.
-      </p>
+      <PageHeader title={community} description={`Discover available properties and featured brokers in ${community}.`} />
 
       {result.items.length === 0 ? (
         <p className="mt-12 rounded-2xl border border-dashed border-charcoal/20 p-12 text-center text-charcoal/50">

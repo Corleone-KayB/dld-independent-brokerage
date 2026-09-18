@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { listDevelopers } from "@/modules/developers/service";
 import { DeveloperCard } from "@/components/developer/developer-card";
 import { Pagination } from "@/components/ui/pagination";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata: Metadata = { title: "Developers" };
 export const dynamic = "force-dynamic";
@@ -17,10 +18,7 @@ export default async function DevelopersPage({
 
   return (
     <div className="container-shell py-12">
-      <h1 className="font-display text-3xl font-semibold text-charcoal">Developers</h1>
-      <p className="mt-2 max-w-2xl text-charcoal/60">
-        Browse verified developer profiles and their off-plan project inventory.
-      </p>
+      <PageHeader title="Developers" description="Browse verified developer profiles and their off-plan project inventory." />
 
       {result.items.length === 0 ? (
         <p className="mt-12 rounded-2xl border border-dashed border-charcoal/20 p-12 text-center text-charcoal/50">

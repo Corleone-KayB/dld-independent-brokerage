@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/ui/page-header";
 
 export const metadata: Metadata = { title: "Privacy Policy" };
 
 export default function PrivacyPage() {
   return (
     <div className="container-shell max-w-3xl py-16">
-      <h1 className="font-display text-3xl font-semibold text-charcoal">Privacy Policy</h1>
+      <PageHeader title="Privacy Policy" />
       <div className="mt-6 space-y-4 text-sm text-charcoal/70">
         <p>
           This is placeholder legal content for the MVP demonstration

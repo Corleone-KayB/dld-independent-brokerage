@@ -15,7 +15,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="container-shell grid gap-6 py-8 lg:grid-cols-[240px_1fr]">
-      <aside className="h-fit rounded-2xl border border-charcoal/10 bg-white">
+      <aside className="h-fit rounded-2xl border border-stone/20 bg-soft-white">
         <DashboardNav roles={user.roles} />
       </aside>
       <div>{children}</div>

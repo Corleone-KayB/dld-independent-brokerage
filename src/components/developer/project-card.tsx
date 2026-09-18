@@ -11,7 +11,7 @@ export function ProjectCard({ project }: { project: ProjectWithImages }) {
 
   return (
     <Link href={`/developers/projects/${project.slug}`} className="focus-ring block rounded-2xl">
-      <Card className="overflow-hidden transition-shadow hover:shadow-glass">
+      <Card className="overflow-hidden transition-shadow hover:shadow-elevated-hover">
         <div className="relative aspect-[4/3] w-full overflow-hidden bg-charcoal/5">
           {image ? (
             <Image src={image} alt={project.name} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />

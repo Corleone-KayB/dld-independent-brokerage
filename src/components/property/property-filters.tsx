@@ -40,7 +40,7 @@ export function PropertyFilters() {
   }
 
   return (
-    <form onSubmit={apply} className="grid gap-4 rounded-2xl border border-charcoal/10 bg-white p-6 sm:grid-cols-2 lg:grid-cols-6">
+    <form onSubmit={apply} className="grid gap-5 rounded-2xl border border-stone/20 bg-soft-white p-6 shadow-elevated sm:grid-cols-2 sm:p-8 lg:grid-cols-6">
       <div>
         <Label htmlFor="purpose">Purpose</Label>
         <Select id="purpose" value={filters.purpose} onChange={(e) => setFilters((f) => ({ ...f, purpose: e.target.value }))}>
@@ -81,12 +81,12 @@ export function PropertyFilters() {
         <Input id="minBedrooms" type="number" min={0} value={filters.minBedrooms} onChange={(e) => setFilters((f) => ({ ...f, minBedrooms: e.target.value }))} />
       </div>
 
-      <div className="flex items-end gap-2 lg:col-span-6">
-        <Button type="submit" disabled={isPending}>
-          {isPending ? "Searching…" : "Search"}
-        </Button>
-        <Button type="button" variant="outline" onClick={reset}>
+      <div className="flex items-end justify-end gap-3 border-t border-stone/15 pt-5 lg:col-span-6">
+        <Button type="button" variant="ghost" onClick={reset}>
           Reset
+        </Button>
+        <Button type="submit" disabled={isPending} className="px-8">
+          {isPending ? "Searching…" : "Search"}
         </Button>
       </div>
     </form>

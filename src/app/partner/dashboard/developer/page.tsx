@@ -34,7 +34,7 @@ export default async function DeveloperDashboardPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           {projects.map((project) => (
             <Link key={project.id} href={`/partner/dashboard/developer/${project.id}`}>
-              <Card className="p-5 transition-shadow hover:shadow-glass">
+              <Card className="p-5 transition-shadow hover:shadow-elevated-hover">
                 <div className="flex items-start justify-between gap-2">
                   <p className="font-display text-base font-semibold text-charcoal">{project.name}</p>
                   <Badge tone={project.status === "PUBLISHED" ? "success" : project.status === "PENDING_REVIEW" ? "warning" : "neutral"}>
