@@ -76,11 +76,7 @@ See `.env.example` for the full contract (validated at boot by
 `src/lib/env.ts` — the app refuses to start with a missing/invalid value).
 Key variables:
 
-- `DATABASE_URL` — Postgres connection string (pooled, when hosting on a
-  serverless-friendly Postgres provider)
-- `DIRECT_URL` — unpooled Postgres connection string; Prisma migrations need
-  a direct connection. Identical to `DATABASE_URL` locally (Docker Compose
-  has no pooler); see `docs/DEPLOYMENT.md` for hosted setups
+- `DATABASE_URL` — Postgres connection string
 - `AUTH_SECRET` — session signing secret (replace for any non-local use)
 - `NEXT_PUBLIC_WHATSAPP_NUMBER` — number used by every WhatsApp CTA
 - `DLD_OFFICIAL_VERIFICATION_URL` / `..._BROKER_DIRECTORY_URL` /
