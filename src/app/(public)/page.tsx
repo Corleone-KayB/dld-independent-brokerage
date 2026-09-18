@@ -10,6 +10,8 @@ import { searchBrokers } from "@/modules/brokers/service";
 import { propertySearchSchema } from "@/lib/validations/property";
 import { COMMUNITIES, DEMO_DATA_DISCLAIMER } from "@/lib/constants";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [{ items: properties }, { items: brokers }] = await Promise.all([
     searchProperties(propertySearchSchema.parse({ page: 1, pageSize: 6 }), { publicOnly: true }),

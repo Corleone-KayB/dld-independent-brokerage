@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { getBlogPostBySlug } from "@/modules/marketing/service";
 import { formatDate } from "@/lib/utils/format";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);

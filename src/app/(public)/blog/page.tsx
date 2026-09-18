@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils/format";
 
 export const metadata: Metadata = { title: "Blog & Guides" };
+export const dynamic = "force-dynamic";
 
 export default async function BlogPage() {
   const posts = await listBlogPosts({ publicOnly: true });

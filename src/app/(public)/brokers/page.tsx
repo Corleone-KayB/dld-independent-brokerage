@@ -4,6 +4,7 @@ import { BrokerCard } from "@/components/broker/broker-card";
 import { Pagination } from "@/components/ui/pagination";
 
 export const metadata: Metadata = { title: "Find a Verified Broker" };
+export const dynamic = "force-dynamic";
 
 export default async function BrokersPage({
   searchParams,

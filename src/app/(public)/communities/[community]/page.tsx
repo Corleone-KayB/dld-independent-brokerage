@@ -5,6 +5,8 @@ import { propertySearchSchema } from "@/lib/validations/property";
 import { PropertyCard } from "@/components/property/property-card";
 import { COMMUNITIES } from "@/lib/constants";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: { params: Promise<{ community: string }> }): Promise<Metadata> {
   const { community } = await params;
   return { title: decodeURIComponent(community) };

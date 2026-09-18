@@ -6,6 +6,8 @@ import { ProjectCard } from "@/components/developer/project-card";
 import { VerificationBadge } from "@/components/compliance/verification-badge";
 import { Card } from "@/components/ui/card";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const developer = await getDeveloperBySlug(slug);

@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { formatAed } from "@/lib/utils/format";
 import { PROPERTY_TYPE_LABELS } from "@/lib/constants";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const project = await getProjectBySlug(slug);

@@ -6,6 +6,7 @@ import { PropertyCard } from "@/components/property/property-card";
 import { Pagination } from "@/components/ui/pagination";
 
 export const metadata: Metadata = { title: "Properties" };
+export const dynamic = "force-dynamic";
 
 export default async function PropertiesPage({
   searchParams,

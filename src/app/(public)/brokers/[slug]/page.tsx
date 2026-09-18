@@ -14,6 +14,8 @@ import { Badge } from "@/components/ui/badge";
 import { ConnectButton } from "@/components/network/connect-button";
 import { dldConfig } from "@/server/dld/config";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const broker = await getBrokerBySlug(slug);

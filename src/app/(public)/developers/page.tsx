@@ -4,6 +4,7 @@ import { DeveloperCard } from "@/components/developer/developer-card";
 import { Pagination } from "@/components/ui/pagination";
 
 export const metadata: Metadata = { title: "Developers" };
+export const dynamic = "force-dynamic";
 
 export default async function DevelopersPage({
   searchParams,

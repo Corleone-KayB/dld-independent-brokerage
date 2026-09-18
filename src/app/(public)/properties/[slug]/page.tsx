@@ -12,6 +12,8 @@ import { Card } from "@/components/ui/card";
 import { formatAed } from "@/lib/utils/format";
 import { PROPERTY_PURPOSE_LABELS, PROPERTY_TYPE_LABELS } from "@/lib/constants";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const property = await getPropertyBySlug(slug);
