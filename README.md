@@ -1,10 +1,46 @@
 # DLD Independent Brokerage Partners
 
-A private digital brokerage/real-estate platform for Dubai's independent
-brokers and brokerage partners. **This is not an official Dubai Land
-Department (DLD) platform** — it is an independent private network that
-complements official DLD services and links out to them for official
-verification.
+A private digital brokerage / real-estate platform for Dubai's independent
+brokers and brokerage partners — public marketplace, broker network, CRM,
+deals and commission splitting, compliance, and an admin console.
+
+> **This is not an official Dubai Land Department (DLD) platform.** It is an
+> independent private network that complements official DLD services and links
+> out to them for official verification. All demo data is clearly synthetic.
+
+### ▶ Live demo — **[dld-independent-brokerage.vercel.app](https://dld-independent-brokerage.vercel.app)**
+
+These are worth clicking, no sign-in required:
+
+| Page | What it shows |
+|---|---|
+| [`/properties`](https://dld-independent-brokerage.vercel.app/properties) | Public marketplace with faceted search |
+| [`/brokers`](https://dld-independent-brokerage.vercel.app/brokers) | Broker directory with the verification-tier labels |
+| [`/calculators`](https://dld-independent-brokerage.vercel.app/calculators) | Eight ROI / mortgage / affordability calculators |
+| [`/partner/apply`](https://dld-independent-brokerage.vercel.app/partner/apply) | Partner onboarding → admin approval flow |
+
+The partner dashboard, CRM, deal/commission management and admin console sit
+behind `/partner/login`. Credentials for the live instance are available on
+request; the local seed below provisions all seven roles automatically.
+
+---
+
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/home.png" width="49%" alt="Homepage" />
+  <img src="docs/screenshots/properties.png" width="49%" alt="Public property marketplace" />
+</p>
+<p align="center">
+  <img src="docs/screenshots/brokers.png" width="49%" alt="Broker directory with verification tiers" />
+  <img src="docs/screenshots/calculators.png" width="49%" alt="Investor calculators" />
+</p>
+
+<sub>Regenerate against the live deployment with `npm run screenshots`.</sub>
+
+---
+
+## What is in it
 
 **Phase 1 (MVP) + Phase 2 + Phase 3 complete.** Phase 1: public marketplace,
 broker directory, partner onboarding, embedded CRM, compliance center, admin
@@ -18,6 +54,12 @@ banners + SEO metadata). Phase 3 adds the **DLD Independent Brokerage
 Network** — broker-to-broker membership & connections, secure messaging,
 referrals & lead exchange, deal collaboration, listing/lead sharing,
 commission splitting, peer reputation, and network performance tracking.
+
+**143 unit and integration tests plus 9 Playwright specs** (`npm test`,
+`npm run test:e2e`) cover the matching, scoring, calculator, RBAC and
+compliance engines — see [Tests](#tests) for the full breakdown.
+
+---
 
 ## Stack
 
@@ -49,6 +91,12 @@ npm run start
 ```
 
 ## Demo accounts
+
+> **These are local-seed credentials.** The shared password below is the
+> development default committed in `.env.example`, so any deployment that is
+> publicly reachable must set its own `SEED_USER_PASSWORD` in the hosting
+> provider's environment before seeding — otherwise the seeded Super Admin is
+> open to anyone who has read this file.
 
 All seeded users share the password in `SEED_USER_PASSWORD`
 (`.env.example` default: `DldPartners#2026`). Sign in at `/partner/login` —
